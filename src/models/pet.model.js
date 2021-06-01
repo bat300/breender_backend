@@ -95,5 +95,7 @@ function calculateAge(birthDate) {
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
-module.exports = mongoose.model("Pet", PetSchema)
-module.exports = mongoose.model("Breed", BreedSchema)
+var Pet = mongoose.model("Pet", PetSchema)
+var Breed = mongoose.model("Breed", BreedSchema)
+
+export default { Pet, Breed }

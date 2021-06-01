@@ -82,5 +82,7 @@ const UserSchema = new mongoose.Schema({
     paymentMethods: [PaymentMethodSchema],
 })
 
-module.exports = mongoose.model("User", UserSchema)
-module.exports = mongoose.model("Review", ReviewSchema)
+var User = mongoose.model("User", UserSchema)
+var Review = mongoose.model("Review", ReviewSchema)
+
+export default { User, Review }

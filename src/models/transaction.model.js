@@ -38,4 +38,6 @@ function calculateDeadline(createdAt) {
     return deadline
 }
 
-module.exports = mongoose.model("Transaction", TransactionSchema)
+var Transaction = mongoose.model("Transaction", TransactionSchema)
+
+export default { Transaction }
