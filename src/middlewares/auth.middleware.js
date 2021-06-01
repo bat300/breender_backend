@@ -1,11 +1,11 @@
-import * as jsonwebtoken from "jsonwebtoken";
-import { JwtSecret } from "../config.js";
-import * as UserModel from "../models/user.model.js";
+import * as jsonwebtoken from "jsonwebtoken"
+import { JwtSecret } from "../config.js"
+import * as UserSchema from "../models/user.model.js"
 
 const allowCrossDomain = (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "*");
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+    res.header("Access-Control-Allow-Headers", "*")
 
     // intercept OPTIONS method
     if ("OPTIONS" == req.method) {
@@ -45,7 +45,7 @@ const checkAuthentication = (req, res, next) => {
 const checkIsAdmin = async (req, res, next) => {
     // checkAuthentication must be executed before this method
     // if not req.userId is not defined
-    let user = await UserModel.findById(req.userId);
+    let user = await UserSchema.findById(req.userId)
 
     if (user.role === "admin") {
         // if the user is an admin continue with the execution
