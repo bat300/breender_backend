@@ -35,7 +35,7 @@ const ReviewSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    veifiedTransaction: {
+    verifiedTransaction: {
         type: Boolean,
         default: false,
     },
@@ -82,7 +82,7 @@ const UserSchema = new mongoose.Schema({
     paymentMethods: [PaymentMethodSchema],
 })
 
-var User = mongoose.model("User", UserSchema)
-var Review = mongoose.model("Review", ReviewSchema)
+const User = mongoose.model("User", UserSchema)
+const Review = mongoose.model("Review", ReviewSchema)
 
 export default { User, Review }

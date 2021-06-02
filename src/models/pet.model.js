@@ -43,7 +43,7 @@ const CompetitionSchema = new mongoose.Schema({
     },
     category: String,
     prize: String,
-    certificate: Document,
+    certificate: DocumentSchema,
 })
 
 const PetSchema = new mongoose.Schema({
@@ -95,7 +95,7 @@ function calculateAge(birthDate) {
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
-var Pet = mongoose.model("Pet", PetSchema)
-var Breed = mongoose.model("Breed", BreedSchema)
+const Pet = mongoose.model("Pet", PetSchema)
+const Breed = mongoose.model("Breed", BreedSchema)
 
 export default { Pet, Breed }
