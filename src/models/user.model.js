@@ -1,27 +1,88 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-// Define the user schema
-const UserModel = new mongoose.Schema({
+const PaymentMethodSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ["paypal"],
+        required: true,
+    },
+    details: {
+        type: String,
+        required: true,
+    },
+})
+
+const ReviewSchema = new mongoose.Schema({
+    reviewerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    revieweeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    review: {
+        type: String,
+        required: true,
+    },
+    rating: {
+        type: Number,
+        min: 0,
+        max: 5,
+        required: true,
+    },
+    reviewDate: {
+        type: Date,
+        required: true,
+    },
+    verifiedTransaction: {
+        type: Boolean,
+        default: false,
+    },
+})
+
+const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
+        unique: true,
     },
     password: {
         type: String,
         required: true,
         unique: true,
     },
-    // role of the user, used for rights management
     role: {
         type: String,
-        // role can only take the value "member" and "admin"
         enum: ["member", "admin"],
-        // if not specified the role member is choosen
         default: "member",
     },
-});
+    email: {
+        type: String,
+        unique: true,
+        required: true,
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+    subscriptionPlan: {
+        type: String,
+        enum: ["free", "premium"],
+        default: "free",
+        required: true,
+    },
+    renewalFrequency: {
+        type: String,
+        enum: ["none", "1mo", "3mo", "6mo", "1yr"],
+        default: "none",
+        required: true,
+    },
+    nextRenewalDate: Date,
+    paymentMethods: [PaymentMethodSchema],
+})
 
-UserModel.set("versionKey", false);
+const User = mongoose.model("User", UserSchema)
+const Review = mongoose.model("Review", ReviewSchema)
 
-// Export the User model
-export default mongoose.model("User", UserModel);
+export default { User, Review }

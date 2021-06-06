@@ -1,7 +1,7 @@
-import * as jsonwebtoken from "jsonwebtoken";
-import * as bcryptjs from "bcryptjs";
-import { JwtSecret } from "../config.js";
-import * as UserModel from "../models/user.model.js";
+import * as jsonwebtoken from "jsonwebtoken"
+import * as bcryptjs from "bcryptjs"
+import { JwtSecret } from "../config.js"
+import * as UserSchema from "../models/user.model.js"
 
 const login = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -20,7 +20,7 @@ const login = async (req, res) => {
     // handle the request
     try {
         // get the user form the database
-        let user = await UserModel.findOne({
+        let user = await UserSchema.findOne({
             username: req.body.username,
         }).exec();
 
@@ -79,7 +79,7 @@ const register = async (req, res) => {
         };
 
         // create the user in the database
-        let retUser = await UserModel.create(user);
+        let retUser = await UserSchema.create(user)
 
         // if user is registered without errors
         // create a token
@@ -117,9 +117,7 @@ const register = async (req, res) => {
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await UserModel.findById(req.userId)
-            .select("username")
-            .exec();
+        let user = await UserSchema.findById(req.userId).select("username").exec()
 
         if (!user)
             return res.status(404).json({
