@@ -1,7 +1,7 @@
-import * as jsonwebtoken from "jsonwebtoken"
-import * as bcryptjs from "bcryptjs"
+import jsonwebtoken from "jsonwebtoken"
+import * as bcrypt from "bcrypt"
 import { JwtSecret } from "../config.js"
-import * as UserSchema from "../models/user.model.js"
+import User from "../models/user.model.js"
 
 const login = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -20,12 +20,12 @@ const login = async (req, res) => {
     // handle the request
     try {
         // get the user form the database
-        let user = await UserSchema.findOne({
+        let user = await User.findOne({
             username: req.body.username,
         }).exec();
 
         // check if the password is valid
-        const isPasswordValid = bcryptjs.compareSync(
+        const isPasswordValid = bcrypt.compareSync(
             req.body.password,
             user.password
         );
@@ -69,17 +69,22 @@ const register = async (req, res) => {
     // handle the request
     try {
         // hash the password before storing it in the database
-        const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
+        const salt = bcrypt.genSaltSync(8);
+        const hashedPassword = bcrypt.hashSync(req.body.password, salt);
 
         // create a user object
-        const user = {
+        const userData = {
             username: req.body.username,
             password: hashedPassword,
             role: req.body.isAdmin ? "admin" : "member",
+            email: req.body.email,
+            city: req.body.city
+            
+
         };
 
         // create the user in the database
-        let retUser = await UserSchema.create(user)
+        let retUser = await User.create(userData);
 
         // if user is registered without errors
         // create a token
@@ -117,7 +122,7 @@ const register = async (req, res) => {
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await UserSchema.findById(req.userId).select("username").exec()
+        let user = await User.findById(req.userId).select("username").exec()
 
         if (!user)
             return res.status(404).json({
