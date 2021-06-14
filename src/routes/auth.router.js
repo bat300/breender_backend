@@ -1,12 +1,13 @@
 import * as express from "express";
 import { checkAuthentication } from "../middlewares/auth.middleware.js";
-import { login, register, me, logout } from "../controllers/auth.controller.js";
+import * as AuthController from "../controllers/auth.controller.js";
 
-const router = express.Router();
+const authRouter = express.Router();
 
-router.post("/login", login); // login
-router.post("/register", register); // register a new user
-router.get("/me", checkAuthentication, me); // get own username, requires a logged in user
-router.get("/logout", checkAuthentication, logout); // logout user
+// login
+authRouter.post("/login", AuthController.login); // login
+authRouter.post("/register", AuthController.register); // register a new user
+authRouter.get("/me", checkAuthentication, AuthController.me); // get own username, requires a logged in user
+authRouter.get("/logout", checkAuthentication, AuthController.logout); // logout user
 
-export default router;
+export default authRouter;

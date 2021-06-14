@@ -1,6 +1,8 @@
 import mongoose from "mongoose"
 
-const PaymentMethodSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const PaymentMethodSchema = new Schema({
     type: {
         type: String,
         enum: ["paypal"],
@@ -10,15 +12,15 @@ const PaymentMethodSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-})
+});
 
-const ReviewSchema = new mongoose.Schema({
+const ReviewSchema = new Schema({
     reviewerId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User",
     },
     revieweeId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User",
     },
     review: {
@@ -39,9 +41,9 @@ const ReviewSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-})
+});
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -80,9 +82,9 @@ const UserSchema = new mongoose.Schema({
     },
     nextRenewalDate: Date,
     paymentMethods: [PaymentMethodSchema],
-})
+});
 
-const User = mongoose.model("User", UserSchema)
-const Review = mongoose.model("Review", ReviewSchema)
+const User = mongoose.model("User", UserSchema);
+const Review = mongoose.model("Review", ReviewSchema);
 
-export default { User, Review }
+export default User;
