@@ -1,10 +1,11 @@
 import express from 'express';
-import bodyParser   from 'body-parser';
+import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import { allowCrossDomain } from './middlewares/auth.middleware.js';
 
 // import routes
 import auth from './routes/auth.router.js';
+import pet from './routes/pet.js';
 
 const App = express();
 
@@ -24,6 +25,7 @@ App.get('/', (req, res) => {
 
 // API routes
 // @TODO: add further routes
-App.use('/auth'  , auth);
+App.use('/auth', auth);
+App.use('/search', pet);
 
 export default App;

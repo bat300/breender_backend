@@ -85,7 +85,10 @@ const PetSchema = new mongoose.Schema({
     documents: [DocumentSchema],
 })
 
-PetSchema.virtual("age").get(calculateAge(this.birthDate))
+PetSchema.virtual("age").get(function () {
+    return calculateAge(this.birthDate)
+})
+
 PetSchema.virtual("species").get(function () {
     return this.breed.species
 })
@@ -98,4 +101,4 @@ function calculateAge(birthDate) {
 const Pet = mongoose.model("Pet", PetSchema)
 const Breed = mongoose.model("Breed", BreedSchema)
 
-export default { Pet, Breed }
+export { Pet, Breed }
