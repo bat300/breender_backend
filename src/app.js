@@ -1,9 +1,11 @@
 import express from 'express';
 import helmet from 'helmet';
 import { allowCrossDomain } from './middlewares/auth.middleware.js';
+import morgan from 'morgan';
 
 // import routes
 import authRouter from './routes/auth.router.js';
+import petRouter from './routes/pet.router.js';
 
 const App = express();
 
@@ -12,7 +14,7 @@ App.use(helmet());
 App.use(express.json());
 App.use(express.urlencoded({ extended: false }));
 App.use(allowCrossDomain);
-
+App.use(morgan("tiny"))
 
 // Basic route
 App.get('/', (req, res) => {
@@ -23,6 +25,6 @@ App.get('/', (req, res) => {
 // API routes
 // @TODO: add further routes
 App.use('/auth', authRouter);
-
+App.use('/pets', petRouter);
 
 export default App;
