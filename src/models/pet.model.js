@@ -1,16 +1,4 @@
-import mongoose from "mongoose"
-
-const BreedSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    species: {
-        type: String,
-        enum: ["dog", "cat", "horse"],
-        required: true,
-    },
-})
+import mongoose from 'mongoose';
 
 const DocumentSchema = new mongoose.Schema({
     name: {
@@ -18,6 +6,10 @@ const DocumentSchema = new mongoose.Schema({
         required: true,
     },
     type: {
+        type: String,
+        required: true,
+    },
+    url: {
         type: String,
         required: true,
     },
@@ -65,6 +57,15 @@ const PetSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    breed: {
+        type: String,
+        required: true,
+    },
+    species: {
+        type: String,
+        enum: ["dog", "cat", "horse"],
+        required: true,
+    },
     price: {
         type: Number,
         min: 0.0,
@@ -72,30 +73,19 @@ const PetSchema = new mongoose.Schema({
     // Profile picture stored as path to the image
     profilePicture: {
         type: String,
-        required: true,
     },
-    // Pictures stroed as array of paths to images
+    // Pictures string as array of paths to images
     pictures: [String],
-    breedId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Breed",
-        required: true,
-    },
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
 })
 
-PetSchema.virtual("age").get(calculateAge(this.birthDate))
-PetSchema.virtual("species").get(function () {
-    return this.breed.species
-})
+// @ts-ignore
+PetSchema.virtual("age").get(calculateAge(PetSchema.birthDate))
 
 function calculateAge(birthDate) {
-    var ageDate = new Date(Date.now() - birthDate.getTime())
+    var ageDate = new Date(Date.now() - birthDate)
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
-const Pet = mongoose.model("Pet", PetSchema)
-const Breed = mongoose.model("Breed", BreedSchema)
-
-export default { Pet, Breed }
+export var Pet = mongoose.model("Pet", PetSchema)
