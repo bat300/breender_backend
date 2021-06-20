@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import { allowCrossDomain } from './middlewares/auth.middleware.js';
 
 // import routes
-import pet from './routes/pet.js';
+import petRouter from './routes/pet.router.js';
 import authRouter from './routes/auth.router.js';
 
 const App = express();
@@ -23,7 +23,7 @@ App.get('/', (req, res) => {
 });
 // API routes
 // @TODO: add further routes
-App.use('/search', pet);
+App.use('/pets', petRouter);
 App.use('/auth', authRouter);
 
 export default App;

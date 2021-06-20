@@ -12,6 +12,8 @@ const BreedSchema = new mongoose.Schema({
     },
 })
 
+const Breed = mongoose.model("Breed", BreedSchema)
+
 const DocumentSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -83,22 +85,20 @@ const PetSchema = new mongoose.Schema({
     },
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 })
 
 PetSchema.virtual("age").get(function () {
     return calculateAge(this.birthDate)
 })
 
-PetSchema.virtual("species").get(function () {
-    return this.breed.species
-})
-
 function calculateAge(birthDate) {
-    var ageDate = new Date(Date.now() - birthDate.getTime())
+    var ageDate = new Date(Date.now() - birthDate.getTime());
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
 const Pet = mongoose.model("Pet", PetSchema)
-const Breed = mongoose.model("Breed", BreedSchema)
 
 export { Pet, Breed }

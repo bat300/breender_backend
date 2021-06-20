@@ -1,7 +1,7 @@
 import jsonwebtoken from "jsonwebtoken"
 import * as bcrypt from "bcrypt"
 import { JwtSecret } from "../config.js"
-import User from "../models/user.model.js"
+import { User } from "../models/user.model.js"
 
 const login = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -79,7 +79,7 @@ const register = async (req, res) => {
             role: req.body.isAdmin ? "admin" : "member",
             email: req.body.email,
             city: req.body.city
-            
+
 
         };
 
