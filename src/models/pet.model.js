@@ -9,6 +9,10 @@ const DocumentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    path: {
+        type: String,
+        required: true,
+    },
     url: {
         type: String,
         required: true,
@@ -22,6 +26,20 @@ const DocumentSchema = new mongoose.Schema({
         default: false,
     },
     verificationDate: Date,
+})
+
+
+const PictureSchema = new mongoose.Schema({
+    path: {
+        type: String,
+        required: true,
+    },
+    src: {
+        type: String,
+        required: true,
+    },
+    title: String,
+    description: String,
 })
 
 const CompetitionSchema = new mongoose.Schema({
@@ -72,10 +90,11 @@ const PetSchema = new mongoose.Schema({
     },
     // Profile picture stored as path to the image
     profilePicture: {
-        type: String,
+        type: PictureSchema,
+        required: true,
     },
     // Pictures string as array of paths to images
-    pictures: [String],
+    pictures: [PictureSchema],
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
 })
