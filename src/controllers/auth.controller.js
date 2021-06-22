@@ -80,7 +80,7 @@ const register = async (req, res) => {
             role: req.body.isAdmin ? "admin" : "member",
             email: req.body.email,
             city: req.body.city
-            
+
 
         };
 
@@ -139,27 +139,30 @@ const register = async (req, res) => {
 
 const confirmEmail = async (req, res) => {
     const decodedToken = jsonwebtoken.decode(req.params.token, {complete: true}); //decode token 
-    const _id = decodedToken.payload._id; //extract id from token 
+    const _id = decodedToken.payload._id; 
+    //extract id from token 
     User.findOne({ _id: _id }, function (err, token) {
         // token is not found into database i.e. token may have expired 
         if (!token){
-            return res.status(400).json({error: 'Link Expired', message:'Your verification link may have expired. Please click on resend for verify your Email.'});
+            console.log("no token")
+            return res.status(400).json({error: 'Link Expired', message:'Your verification link may have expired.'});
         }
         // if token is found then check valid user 
         else{
             User.findOne({ _id: _id, email: req.params.email }, function (err, user) {
                 // not valid user
                 if (!user){
-                    return res.status(401).json({error: 'User Not Found', message:'We were unable to find a user for this verification. Please SignUp!'});
+                    return res.status(401).json({error: 'User Not Found', message:'We were unable to find an account for this verification. Please SignUp!'});
                 } 
                 // user is already verified
                 else if (user.isVerified){
         
-                    return res.status(200).json({message: 'User has been already verified. Please Login'});
+                    return res.status(200).json({message: 'Your account has been already verified'});
                     
                 }
                 // verify user
                 else{
+                    console.log(user)
                     user.isVerified = true;
                     user.save(function (err) {
                         if(err){

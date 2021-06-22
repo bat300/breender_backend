@@ -57,6 +57,7 @@ const CompetitionSchema = new mongoose.Schema({
 })
 
 const PetSchema = new mongoose.Schema({
+    _id: Object,
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -97,13 +98,17 @@ const PetSchema = new mongoose.Schema({
     pictures: [PictureSchema],
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 })
 
-// @ts-ignore
-PetSchema.virtual("age").get(calculateAge(PetSchema.birthDate))
+PetSchema.virtual("age").get(function () {
+    return calculateAge(this.birthDate)
+})
 
 function calculateAge(birthDate) {
-    var ageDate = new Date(Date.now() - birthDate)
+    var ageDate = new Date(Date.now() - birthDate.getTime());
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
