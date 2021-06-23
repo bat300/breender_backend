@@ -57,7 +57,6 @@ const CompetitionSchema = new mongoose.Schema({
 })
 
 const PetSchema = new mongoose.Schema({
-    _id: Object,
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
