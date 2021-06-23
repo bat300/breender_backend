@@ -1,17 +1,5 @@
 import mongoose from "mongoose"
 
-const BreedSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    species: {
-        type: String,
-        enum: ["dog", "cat", "horse"],
-        required: true,
-    },
-})
-
 const DocumentSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -76,26 +64,31 @@ const PetSchema = new mongoose.Schema({
     },
     // Pictures stroed as array of paths to images
     pictures: [String],
-    breedId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Breed",
+    breed: {
+        type: String,
+        required: true,
+    },
+    species: {
+        type: String,
+        enum: ["dog", "cat", "horse"],
         required: true,
     },
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 })
 
-PetSchema.virtual("age").get(calculateAge(this.birthDate))
-PetSchema.virtual("species").get(function () {
-    return this.breed.species
+PetSchema.virtual("age").get(function () {
+    return calculateAge(this.birthDate)
 })
 
 function calculateAge(birthDate) {
-    var ageDate = new Date(Date.now() - birthDate.getTime())
+    var ageDate = new Date(Date.now() - birthDate.getTime());
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
 const Pet = mongoose.model("Pet", PetSchema)
-const Breed = mongoose.model("Breed", BreedSchema)
 
-export default { Pet, Breed }
+export { Pet }

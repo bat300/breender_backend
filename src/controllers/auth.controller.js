@@ -1,7 +1,8 @@
-import * as jsonwebtoken from "jsonwebtoken"
-import * as bcryptjs from "bcryptjs"
+import jsonwebtoken from "jsonwebtoken"
+import * as bcrypt from "bcrypt"
+import nodemailer from "nodemailer"
 import { JwtSecret } from "../config.js"
-import * as UserSchema from "../models/user.model.js"
+import { User } from "../models/user.model.js"
 
 const login = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -20,12 +21,12 @@ const login = async (req, res) => {
     // handle the request
     try {
         // get the user form the database
-        let user = await UserSchema.findOne({
+        let user = await User.findOne({
             username: req.body.username,
         }).exec();
 
         // check if the password is valid
-        const isPasswordValid = bcryptjs.compareSync(
+        const isPasswordValid = bcrypt.compareSync(
             req.body.password,
             user.password
         );
@@ -69,17 +70,22 @@ const register = async (req, res) => {
     // handle the request
     try {
         // hash the password before storing it in the database
-        const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
+        const salt = bcrypt.genSaltSync(8);
+        const hashedPassword = bcrypt.hashSync(req.body.password, salt);
 
         // create a user object
-        const user = {
+        const userData = {
             username: req.body.username,
             password: hashedPassword,
             role: req.body.isAdmin ? "admin" : "member",
+            email: req.body.email,
+            city: req.body.city
+
+
         };
 
         // create the user in the database
-        let retUser = await UserSchema.create(user)
+        let retUser = await User.create(userData);
 
         // if user is registered without errors
         // create a token
@@ -95,10 +101,27 @@ const register = async (req, res) => {
             }
         );
 
+        var transporter = nodemailer.createTransport({
+            service: 'Gmail', 
+            auth: {
+                user: "breenderseba@gmail.com", 
+                pass: "breenderTeamSEBA2021" 
+            }
+        });
+        //send an email with verification link containing email and token
+                var mailOptions = { from: 'breenderseba@gmail.com', to: retUser.email, subject: 'Account Verification Link', text: 'Hello '+ retUser.username +',\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + 'localhost:3000' + '\/confirmation\/' + retUser.email + '\/' + token + '\n\nThank You!\n' };
+                transporter.sendMail(mailOptions, function (err) {
+                    if (err) { 
+                        return res.status(500).send({msg: err});
+                     }
+                    return res.status(200).send('A verification email has been sent to ' + user.email + '. It will be expire after one day. If you not get verification Email click on resend token.');
+                });
+
         // return generated token
         res.status(200).json({
             token: token,
         });
+
     } catch (err) {
         if (err.code == 11000) {
             return res.status(400).json({
@@ -114,10 +137,53 @@ const register = async (req, res) => {
     }
 };
 
+const confirmEmail = async (req, res) => {
+    const decodedToken = jsonwebtoken.decode(req.params.token, {complete: true}); //decode token 
+    const _id = decodedToken.payload._id; 
+    //extract id from token 
+    User.findOne({ _id: _id }, function (err, token) {
+        // token is not found into database i.e. token may have expired 
+        if (!token){
+            console.log("no token")
+            return res.status(400).json({error: 'Link Expired', message:'Your verification link may have expired.'});
+        }
+        // if token is found then check valid user 
+        else{
+            User.findOne({ _id: _id, email: req.params.email }, function (err, user) {
+                // not valid user
+                if (!user){
+                    return res.status(401).json({error: 'User Not Found', message:'We were unable to find an account for this verification. Please SignUp!'});
+                } 
+                // user is already verified
+                else if (user.isVerified){
+        
+                    return res.status(200).json({message: 'Your account has been already verified'});
+                    
+                }
+                // verify user
+                else{
+                    console.log(user)
+                    user.isVerified = true;
+                    user.save(function (err) {
+                        if(err){
+                            return res.status(500).json({message: err.message});
+                        }
+                        // account successfully verified
+                        else{
+                          return res.status(200).json({message: 'Your account has been successfully verified'});
+                        }
+                    });
+                }
+            });
+        }
+        
+    });
+};
+
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await UserSchema.findById(req.userId).select("username").exec()
+        let user = await User.findById(req.userId).select("username").exec()
 
         if (!user)
             return res.status(404).json({
@@ -143,4 +209,5 @@ export {
     register,
     logout,
     me,
+    confirmEmail
 };
