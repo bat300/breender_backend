@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const DocumentSchema = new mongoose.Schema({
     name: {
@@ -6,6 +6,14 @@ const DocumentSchema = new mongoose.Schema({
         required: true,
     },
     type: {
+        type: String,
+        required: true,
+    },
+    path: {
+        type: String,
+        required: true,
+    },
+    url: {
         type: String,
         required: true,
     },
@@ -18,6 +26,20 @@ const DocumentSchema = new mongoose.Schema({
         default: false,
     },
     verificationDate: Date,
+})
+
+
+const PictureSchema = new mongoose.Schema({
+    path: {
+        type: String,
+        required: true,
+    },
+    src: {
+        type: String,
+        required: true,
+    },
+    title: String,
+    description: String,
 })
 
 const CompetitionSchema = new mongoose.Schema({
@@ -53,17 +75,6 @@ const PetSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    price: {
-        type: Number,
-        min: 0.0,
-    },
-    // Profile picture stored as path to the image
-    profilePicture: {
-        type: String,
-        required: true,
-    },
-    // Pictures stroed as array of paths to images
-    pictures: [String],
     breed: {
         type: String,
         required: true,
@@ -73,6 +84,17 @@ const PetSchema = new mongoose.Schema({
         enum: ["dog", "cat", "horse"],
         required: true,
     },
+    price: {
+        type: Number,
+        min: 0.0,
+    },
+    // Profile picture stored as path to the image
+    profilePicture: {
+        type: PictureSchema,
+        required: true,
+    },
+    // Pictures string as array of paths to images
+    pictures: [PictureSchema],
     competitions: [CompetitionSchema],
     documents: [DocumentSchema],
 }, {
@@ -89,6 +111,4 @@ function calculateAge(birthDate) {
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
-const Pet = mongoose.model("Pet", PetSchema)
-
-export { Pet }
+export var Pet = mongoose.model("Pet", PetSchema)

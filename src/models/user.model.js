@@ -89,6 +89,6 @@ const UserSchema = new Schema({
 });
 
 const User = mongoose.model("User", UserSchema);
-const Review = mongoose.model("Review", ReviewSchema);
+export const Review = mongoose.model("Review", ReviewSchema);
 
-export { User, Review }
+export default User;

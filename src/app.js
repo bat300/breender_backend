@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import { allowCrossDomain } from './middlewares/auth.middleware.js';
+import morgan from 'morgan';
 
 // import routes
 import petRouter from './routes/pet.router.js';
@@ -13,7 +14,7 @@ App.use(helmet());
 App.use(express.json());
 App.use(express.urlencoded({ extended: false }));
 App.use(allowCrossDomain);
-
+App.use(morgan("tiny"))
 
 // Basic route
 App.get('/', (req, res) => {

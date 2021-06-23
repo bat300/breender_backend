@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken"
 import * as bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { JwtSecret } from "../config.js"
-import { User } from "../models/user.model.js"
+import User from "../models/user.model.js"
 
 const login = async (req, res) => {
     // check if the body of the request contains all necessary properties
