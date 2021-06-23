@@ -1,5 +1,4 @@
 import { Pet } from "../models/pet.model.js"
-import { Pet } from "../models/pet.model.js"
 
 const create = async (req, res) => {
     // check if the body of the request contains all necessary properties
