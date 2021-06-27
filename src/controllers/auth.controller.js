@@ -114,7 +114,7 @@ const register = async (req, res) => {
                     if (err) { 
                         return res.status(500).send({msg: err});
                      }
-                    return res.status(200).send('A verification email has been sent to ' + user.email + '. It will be expire after one day. If you not get verification Email click on resend token.');
+                    return res.status(200).send('A verification email has been sent to ' + retUser.email + '. It will be expire after one day. If you not get verification Email click on resend token.');
                 });
 
         // return generated token
