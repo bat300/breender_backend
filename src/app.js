@@ -1,30 +1,34 @@
-import express from 'express';
-import helmet from 'helmet';
-import { allowCrossDomain } from './middlewares/auth.middleware.js';
-import morgan from 'morgan';
+import express from "express"
+import helmet from "helmet"
+import { allowCrossDomain } from "./middlewares/auth.middleware.js"
+import morgan from "morgan"
 
 // import routes
-import petRouter from './routes/pet.router.js';
-import authRouter from './routes/auth.router.js';
+import petRouter from "./routes/pet.router.js"
+import authRouter from "./routes/auth.router.js"
+import messageRouter from "./routes/message.router.js"
+import conversationRouter from "./routes/conversation.router.js"
 
-const App = express();
+const App = express()
 
 // Adding Basic Middlewares
-App.use(helmet());
-App.use(express.json());
-App.use(express.urlencoded({ extended: false }));
-App.use(allowCrossDomain);
+App.use(helmet())
+App.use(express.json())
+App.use(express.urlencoded({ extended: false }))
+App.use(allowCrossDomain)
 App.use(morgan("tiny"))
 
 // Basic route
-App.get('/', (req, res) => {
+App.get("/", (req, res) => {
     res.json({
-        name: 'SEBA Master: Breender Backend'
-    });
-});
+        name: "SEBA Master: Breender Backend",
+    })
+})
 // API routes
 // @TODO: add further routes
-App.use('/pets', petRouter);
-App.use('/auth', authRouter);
+App.use("/pets", petRouter)
+App.use("/auth", authRouter)
+App.use("/messages", messageRouter)
+App.use("/conversations", conversationRouter)
 
-export default App;
+export default App
