@@ -72,16 +72,15 @@ const register = async (req, res) => {
         // hash the password before storing it in the database
         const salt = bcrypt.genSaltSync(8);
         const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-
+        
         // create a user object
         const userData = {
             username: req.body.username,
             password: hashedPassword,
             role: req.body.isAdmin ? "admin" : "member",
             email: req.body.email,
-            city: req.body.city
-
-
+            city: req.body.city,
+            subscriptionPlan: req.body.subscriptionPlan
         };
 
         // create the user in the database
