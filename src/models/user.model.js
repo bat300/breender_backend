@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const PaymentMethodSchema = new Schema({
     type: {
@@ -12,7 +12,7 @@ const PaymentMethodSchema = new Schema({
         type: String,
         required: true,
     },
-});
+})
 
 const ReviewSchema = new Schema({
     reviewerId: {
@@ -41,7 +41,7 @@ const ReviewSchema = new Schema({
         type: Boolean,
         default: false,
     },
-});
+})
 
 const UserSchema = new Schema({
     username: {
@@ -66,9 +66,13 @@ const UserSchema = new Schema({
     },
     isVerified: {
         type: Boolean,
-        default: false
+        default: false,
     },
     city: {
+        type: String,
+        required: true,
+    },
+    province: {
         type: String,
         required: true,
     },
@@ -85,10 +89,9 @@ const UserSchema = new Schema({
         required: true,
     },
     nextRenewalDate: Date,
-    paymentMethods: [PaymentMethodSchema],
-});
+    paymentMethod: PaymentMethodSchema,
+})
+const User = mongoose.model("User", UserSchema)
+const Review = mongoose.model("Review", ReviewSchema)
 
-const User = mongoose.model("User", UserSchema);
-export const Review = mongoose.model("Review", ReviewSchema);
-
-export default User;
+export default User

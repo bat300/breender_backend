@@ -80,6 +80,11 @@ const register = async (req, res) => {
             error: "Bad Request",
             message: "The request body must contain a city property",
         })
+     if (!Object.prototype.hasOwnProperty.call(req.body, "province"))
+        return res.status(400).json({
+            error: "Bad Request",
+            message: "The request body must contain a province property",
+        })
 
     // handle the request
     try {
@@ -87,15 +92,36 @@ const register = async (req, res) => {
         const salt = bcrypt.genSaltSync(8)
         const hashedPassword = bcrypt.hashSync(req.body.password, salt)
 
-        // create a user object
-        const userData = {
-            username: req.body.username,
-            password: hashedPassword,
-            role: req.body.isAdmin ? "admin" : "member",
-            email: req.body.email,
-            city: req.body.city,
-            subscriptionPlan: req.body.subscriptionPlan,
+        var userData;
+
+        if(req.body.paymentMethod != null) {
+            userData = {
+                username: req.body.username,
+                password: hashedPassword,
+                role: req.body.isAdmin ? "admin" : "member",
+                email: req.body.email,
+                city: req.body.city,
+                province: req.body.province,
+                subscriptionPlan: req.body.subscriptionPlan,
+                renewalFrequency: req.body.renewalFrequency,
+                nextRenewalDate: new Date(),
+                paymentMethod: req.body.paymentMethod
+            }
         }
+        else {
+            userData = {
+                username: req.body.username,
+                password: hashedPassword,
+                role: req.body.isAdmin ? "admin" : "member",
+                email: req.body.email,
+                city: req.body.city,
+                province: req.body.province,
+                subscriptionPlan: req.body.subscriptionPlan
+            }
+        }
+
+
+        console.log(userData);
 
         // create the user in the database
         let retUser = await User.create(userData)
