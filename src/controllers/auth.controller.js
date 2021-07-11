@@ -94,7 +94,8 @@ const register = async (req, res) => {
 
         var userData;
 
-        if(req.body.paymentMethod != null) {
+        if(req.body.subscriptionPlan != "free") {
+            //if subscription plan is premium, add additional data
             userData = {
                 username: req.body.username,
                 password: hashedPassword,
@@ -103,9 +104,8 @@ const register = async (req, res) => {
                 city: req.body.city,
                 province: req.body.province,
                 subscriptionPlan: req.body.subscriptionPlan,
-                renewalFrequency: req.body.renewalFrequency,
-                nextRenewalDate: new Date(),
-                paymentMethod: req.body.paymentMethod
+                paymentPlan: req.body.paymentPlan,
+                startDate: new Date()
             }
         }
         else {
@@ -120,11 +120,9 @@ const register = async (req, res) => {
             }
         }
 
-
-        console.log(userData);
-
         // create the user in the database
         let retUser = await User.create(userData)
+        
 
         // if user is registered without errors
         // create a token
@@ -188,6 +186,13 @@ const checkUser = async (req, res) => {
             return res.status(400).json({
                 error: { type: "email", message: "Invalid email format." },
             })
+        }
+        if(req.params.isAdmin === 'true') { 
+            if(!(req.params.email.indexOf('@breender.de') >= 0)) {
+                return res.status(400).json({
+                    error: { type: "email", message: "Only Breender employees can set admin tag." },
+                })
+            }
         }
         let userWithUsername = await User.findOne({
             username: req.params.username,
