@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
 const DocumentSchema = new mongoose.Schema({
     name: {
@@ -28,7 +28,6 @@ const DocumentSchema = new mongoose.Schema({
     verificationDate: Date,
 })
 
-
 const PictureSchema = new mongoose.Schema({
     path: {
         type: String,
@@ -56,58 +55,61 @@ const CompetitionSchema = new mongoose.Schema({
     certificate: DocumentSchema,
 })
 
-const PetSchema = new mongoose.Schema({
-    ownerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+const PetSchema = new mongoose.Schema(
+    {
+        ownerId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        officialName: {
+            type: String,
+            required: true,
+        },
+        nickname: String,
+        birthDate: {
+            type: Date,
+            required: true,
+        },
+        sex: {
+            type: String,
+            required: true,
+        },
+        breed: {
+            type: String,
+            required: true,
+        },
+        species: {
+            type: String,
+            enum: ["dog", "cat", "horse"],
+            required: true,
+        },
+        price: {
+            type: Number,
+            min: 0.0,
+        },
+        // Profile picture stored as path to the image
+        profilePicture: {
+            type: PictureSchema,
+            required: true,
+        },
+        // Pictures string as array of paths to images
+        pictures: [PictureSchema],
+        competitions: [CompetitionSchema],
+        documents: [DocumentSchema],
     },
-    officialName: {
-        type: String,
-        required: true,
-    },
-    nickname: String,
-    birthDate: {
-        type: Date,
-        required: true,
-    },
-    sex: {
-        type: String,
-        required: true,
-    },
-    breed: {
-        type: String,
-        required: true,
-    },
-    species: {
-        type: String,
-        enum: ["dog", "cat", "horse"],
-        required: true,
-    },
-    price: {
-        type: Number,
-        min: 0.0,
-    },
-    // Profile picture stored as path to the image
-    profilePicture: {
-        type: PictureSchema,
-        required: true,
-    },
-    // Pictures string as array of paths to images
-    pictures: [PictureSchema],
-    competitions: [CompetitionSchema],
-    documents: [DocumentSchema],
-}, {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true }
-})
+    {
+        toObject: { virtuals: true },
+        toJSON: { virtuals: true },
+    }
+)
 
 PetSchema.virtual("age").get(function () {
     return calculateAge(this.birthDate)
 })
 
 function calculateAge(birthDate) {
-    var ageDate = new Date(Date.now() - birthDate.getTime());
+    var ageDate = new Date(Date.now() - birthDate.getTime())
     return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 

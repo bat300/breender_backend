@@ -1,6 +1,7 @@
 import { Conversation } from "../models/conversation.model.js"
 import mongoose from "mongoose"
 
+// TODO: Save id as ObjectId and not string
 const create = async (req, res) => {
     // check if the body of the request contains all necessary properties
     if (Object.keys(req.body).length === 0)
