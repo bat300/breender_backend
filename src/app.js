@@ -6,6 +6,7 @@ import morgan from "morgan"
 // import routes
 import petRouter from "./routes/pet.router.js"
 import authRouter from "./routes/auth.router.js"
+import userRouter from "./routes/user.router.js"
 import messageRouter from "./routes/message.router.js"
 import conversationRouter from "./routes/conversation.router.js"
 
@@ -28,6 +29,7 @@ App.get("/", (req, res) => {
 // @TODO: add further routes
 App.use("/pets", petRouter)
 App.use("/auth", authRouter)
+App.use("/users", userRouter)
 App.use("/messages", messageRouter)
 App.use("/conversations", conversationRouter)
 
