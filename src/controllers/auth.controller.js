@@ -105,7 +105,8 @@ const register = async (req, res) => {
                 province: req.body.province,
                 subscriptionPlan: req.body.subscriptionPlan,
                 paymentPlan: req.body.paymentPlan,
-                startDate: new Date()
+                startDate: new Date(),
+                paymentMethod: req.body.paymentMethod
             }
         }
         else {

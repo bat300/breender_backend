@@ -5,10 +5,10 @@ const Schema = mongoose.Schema
 const PaymentMethodSchema = new Schema({
     type: {
         type: String,
-        enum: ["paypal"],
+        enum: ["PayPal"],
         required: true,
     },
-    details: {
+    email: {
         type: String,
         required: true,
     },
