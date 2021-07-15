@@ -257,10 +257,10 @@ const confirmEmail = async (req, res) => {
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await User.findById(req.userId).select("username").exec()
+        let user = await User.findById(req.params.id).exec()
 
         if (!user)
-            return res.status(404).json({
+            return res.status(405).json({
                 error: "Not Found",
                 message: `User not found`,
             })
