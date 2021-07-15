@@ -1,6 +1,124 @@
 import { Pet } from "../models/pet.model.js"
 import User from "../models/user.model.js"
 import { Transaction } from "../models/transaction.model.js"
+import moment from "moment"
+import nodemailer from "nodemailer"
+
+const STATUS_TYPE = {
+    PENDING: "pending",
+    SUCCESS: "success",
+    FAIL: "fail",
+}
+
+const sendReminder = (user, transaction) => {
+    var transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "breenderseba@gmail.com",
+            pass: "breenderTeamSEBA2021",
+        },
+    })
+
+    //send an email with a reminder to change the status
+    var mailOptions = {
+        from: "breenderseba@gmail.com",
+        to: user.email,
+        subject: "Reminder to update your status",
+        text: `Hello ${user.username} \n\n Please update your status on the transaction #${transaction._id}. This is the last reminder. In 24 hours the status will be set automatically. \n\nThank You!\n`,
+    }
+    transporter.sendMail(mailOptions, function () {})
+
+    Transaction.findByIdAndUpdate(
+        transaction._id,
+        { reminderSent: true },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).exec()
+}
+
+const updateStatusToSuccess = async (transaction) => {
+    let updatedTransaction = await Transaction.findByIdAndUpdate(
+        transaction._id,
+        { status: STATUS_TYPE.SUCCESS, processed: true },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).exec()
+    return updatedTransaction
+}
+
+const updateStatusToFail = async (transaction) => {
+    let updatedTransaction = await Transaction.findByIdAndUpdate(
+        transaction._id,
+        { status: STATUS_TYPE.FAIL, processed: true },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).exec()
+    return updatedTransaction
+}
+
+const checkTransactionStatus = async (transactionsData) => {
+    let transactions = transactionsData
+    for (let i = 0; i < transactions.length; i++) {
+        let transaction = transactions[i]
+        // check if transaction was already finalized
+        if (!transaction.processed) {
+            let receiverStatus = transaction.receiverResponse
+            let senderStatus = transaction.senderResponse
+
+            // check if deadline is after now, if false it's expired
+            let deadlineExpired = moment(transaction.deadline).isBefore()
+            // check if till the deadline one day left (for the reminder)
+            let deadlineOneDayBefore = moment(transaction.deadline).subtract(24, "hours").isBefore()
+
+            if (senderStatus === STATUS_TYPE.FAIL) {
+                if (receiverStatus === STATUS_TYPE.PENDING) {
+                    if (deadlineExpired) {
+                        // set status failed
+                        transaction = await updateStatusToFail(transaction)
+                    } else if (deadlineOneDayBefore) {
+                        // send reminder
+                        if (!transaction.reminderSent) {
+                            let receiver = await User.findById(transaction.receiverId).exec()
+                            sendReminder(receiver, transaction)
+                        }
+                    }
+                } else if (receiverStatus === STATUS_TYPE.FAIL) {
+                    // return money to paying party
+                    // set status failed
+                    transaction = await updateStatusToFail(transaction)
+                } else if (receiverStatus === STATUS_TYPE.SUCCESS) {
+                    // start investigation
+                    // set status failed
+                    transaction = await updateStatusToFail(transaction)
+                }
+            } else if (senderStatus === STATUS_TYPE.SUCCESS) {
+                // set status to success
+                transaction = await updateStatusToSuccess(transaction)
+            } else if (senderStatus === STATUS_TYPE.PENDING) {
+                // check if deadline is expired
+                if (deadlineExpired) {
+                    if (receiverStatus === STATUS_TYPE.SUCCESS) {
+                        // set status to success
+                        transaction = await updateStatusToSuccess(transaction)
+                    } else if (receiverStatus === STATUS_TYPE.PENDING) {
+                        // send status to success
+                        transaction = await updateStatusToSuccess(transaction)
+                    } else if (receiverStatus === STATUS_TYPE.FAIL) {
+                        // set to failed, return money
+                        transaction = await updateStatusToFail(transaction)
+                    }
+                }
+            }
+        }
+    }
+    return transactions
+}
 
 const create = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -60,14 +178,16 @@ const update = async (req, res) => {
 
     // handle the request
     try {
-        // find and update movie with id
+        // find and update transaction with id
         let transaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true,
         }).exec()
 
+        let result = await checkTransactionStatus([transaction])[0]
+
         // return updated pet
-        return res.status(200).json(transaction)
+        return res.status(200).json(result)
     } catch (err) {
         console.log(err)
         return res.status(500).json({
@@ -99,7 +219,7 @@ const listFoUser = async (req, res) => {
         // get all pets in the database
         let transactions = await Transaction.find({ $or: [{ senderId: id }, { receiverId: id }] }).exec()
 
-        let result = transactions
+        let result = await checkTransactionStatus(transactions)
 
         for (let i = 0; i < result.length; i++) {
             let pet = await Pet.findById(result[i].pet).exec()
