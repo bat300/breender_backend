@@ -10,7 +10,11 @@ const StatusProperty = {
 }
 
 const TransactionSchema = new mongoose.Schema(
-    {
+    {   
+        orderNr: {
+            type: String,
+            required: true, 
+        },
         senderId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

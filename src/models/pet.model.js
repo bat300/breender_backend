@@ -88,6 +88,10 @@ const PetSchema = new mongoose.Schema({
         type: Number,
         min: 0.0,
     },
+    purchased: {
+        type: Boolean,
+        default: false,
+    },
     dateCreated: Date,
     // Profile picture stored as path to the image
     profilePicture: {
