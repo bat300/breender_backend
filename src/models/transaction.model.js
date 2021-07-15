@@ -38,6 +38,14 @@ const TransactionSchema = new mongoose.Schema(
             min: 0.0,
             required: true,
         },
+        processed: {
+            type: Boolean,
+            default: false,
+        },
+        reminderSent: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         toObject: { virtuals: true },
