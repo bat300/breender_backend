@@ -6,7 +6,7 @@ import morgan from 'morgan';
 // import routes
 import petRouter from './routes/pet.router.js';
 import authRouter from './routes/auth.router.js';
-import competitionRouter from './routes/competition.router.js';
+import docRouter from './routes/doc.router.js';
 
 const App = express();
 
@@ -27,6 +27,6 @@ App.get('/', (req, res) => {
 // @TODO: add further routes
 App.use('/pets', petRouter);
 App.use('/auth', authRouter);
-App.use('/documents', competitionRouter);
+App.use('/documents', docRouter);
 
 export default App;
