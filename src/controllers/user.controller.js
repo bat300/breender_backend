@@ -1,5 +1,5 @@
 import { Pet } from "../models/pet.model.js"
-import User from "../models/user.model.js"
+import { User, Review } from "../models/user.model.js"
 
 
 const list = async (req, res) => {
@@ -72,8 +72,57 @@ const update = async (req, res) => {
     }
 }
 
+const getReviewsOnUser = async (req, res) => {
+    try {
+        // get reviews on user from database
+        let reviews = await Review.find({ revieweeId: req.params.id }).exec()
+
+        // if reviews weren't found, return 404
+        if (!reviews)
+            return res.status(404).json({
+                error: "Not Found",
+                message: `Reviews were not found`,
+            })
+
+        // return user
+        return res.status(200).json(reviews)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: err.message,
+        })
+    }
+}
+
+const createReview = async (req, res) => {
+    // check if the body of the request contains all necessary properties
+    if (Object.keys(req.body).length === 0)
+        return res.status(400).json({
+            error: "Bad Request",
+            message: "The request body is empty",
+        })
+
+    // handle the request
+    try {
+        // create review in a database
+        let review = await Review.create(req.body)
+
+        // return created review
+        return res.status(201).json(review)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            error: "Internal server error",
+            message: err.message,
+        })
+    }
+}
+
 export {
     list,
     read,
-    update
+    update,
+    getReviewsOnUser,
+    createReview
 }

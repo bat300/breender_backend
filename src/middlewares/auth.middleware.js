@@ -1,6 +1,6 @@
 import jsonwebtoken from "jsonwebtoken"
 import { JwtSecret } from "../config.js"
-import User from "../models/user.model.js"
+import { User } from "../models/user.model.js"
 
 const allowCrossDomain = (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*")
