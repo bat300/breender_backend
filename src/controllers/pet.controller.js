@@ -131,6 +131,7 @@ const getPets = async (req, res) => {
             if (species == null || species == "") {
                 petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
                 let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
@@ -138,6 +139,7 @@ const getPets = async (req, res) => {
             } else {
                 petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
                 let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
@@ -146,6 +148,7 @@ const getPets = async (req, res) => {
         } else if (sex == null || sex == "") {
             petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
             let pets = await Pet.find({ $and: [{ breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                .populate("ownerId", "subscriptionPlan")
                 .limit(itemsPerPage)
                 .skip(itemsPerPage * page)
                 .exec()
@@ -154,6 +157,7 @@ const getPets = async (req, res) => {
             if (species == null || species == "") {
                 petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
                 let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
@@ -161,6 +165,7 @@ const getPets = async (req, res) => {
             } else {
                 petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
                 let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
@@ -169,6 +174,7 @@ const getPets = async (req, res) => {
         }
         petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
         let pets = await Pet.find({ $and: [{ breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+            .populate("ownerId", "subscriptionPlan")
             .limit(itemsPerPage)
             .skip(itemsPerPage * page)
             .exec()
