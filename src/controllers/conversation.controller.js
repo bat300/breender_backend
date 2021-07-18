@@ -71,7 +71,7 @@ const list = async (req, res) => {
     try {
         const conversation = await Conversation.find({
             members: { $in: [mongoose.Types.ObjectId(req.params.userId)] },
-        })
+        }).populate("members")
         res.status(200).json(conversation)
     } catch (err) {
         console.log(err)
