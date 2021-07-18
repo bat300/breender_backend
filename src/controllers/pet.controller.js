@@ -108,6 +108,13 @@ const list = async (req, res) => {
 }
 
 const getPets = async (req, res) => {
+    // Take page number from URL
+    const page = parseInt(req.query.page || "0")
+    const itemsPerPage = 10
+
+    // Total pets used for page count
+    var totalPages = 0
+
     try {
         let sex = req.query.sex
         let breed = req.query.breed
@@ -122,26 +129,44 @@ const getPets = async (req, res) => {
 
         if ((sex == null || sex == "") && (breed == null || breed == "")) {
             if (species == null || species == "") {
-                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] }).exec()
-                return res.status(200).json({ pets: pets })
+                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
             } else {
-                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] }).exec()
-                return res.status(200).json({ pets: pets })
+                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
             }
         } else if (sex == null || sex == "") {
-            let pets = await Pet.find({ $and: [{ breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] }).exec()
-            return res.status(200).json({ pets: pets })
+            let pets = await Pet.find({ $and: [{ breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                .limit(itemsPerPage)
+                .skip(itemsPerPage * page)
+                .exec()
+            return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
         } else if (breed == null || breed == "") {
             if (species == null || species == "") {
-                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] }).exec()
-                return res.status(200).json({ pets: pets })
+                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
             } else {
-                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] }).exec()
-                return res.status(200).json({ pets: pets })
+                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
             }
         }
-        let pets = await Pet.find({ $and: [{ breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] }).exec()
-        return res.status(200).json({ pets: pets })
+        let pets = await Pet.find({ $and: [{ breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+            .limit(itemsPerPage)
+            .skip(itemsPerPage * page)
+            .exec()
+        return res.status(200).json({ pets: pets, totalPages: Math.ceil(pets.length / itemsPerPage) })
     } catch (err) {
         return res.status(500).json({
             error: "Internal server error",
