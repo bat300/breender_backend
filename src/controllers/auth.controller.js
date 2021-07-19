@@ -284,34 +284,4 @@ const logout = (req, res) => {
     res.status(200).send({ token: null })
 }
 
-const updateUser = async (req, res, next) => {
-    // check if the body of the request contains all necessary properties
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400).json({
-            error: "Bad Request",
-            message: "The request body is empty",
-        })
-    }
-
-    // handle the request
-    try {
-
-        // find and update movie with id
-          await User.findByIdAndUpdate({ "_id": req.body.id}, { "$set": { "subscriptionPlan": req.body.subscriptionPlan, "paymentPlan": req.body.paymentPlan, "paymentMethod": req.body.paymentMethod}}, {
-            new: true,
-            runValidators: true,
-        }).exec()
-
-        return res.status(200).json("User updated")
-        //token is atomatically invalidated
-        
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({
-            error: "Internal server error",
-            message: err.message,
-        })
-    }
-}
-
-export { login, register, checkUser, logout, me, confirmEmail, updateUser }
+export { login, register, checkUser, logout, me, confirmEmail }
