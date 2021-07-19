@@ -16,7 +16,7 @@ const create = async (req, res) => {
         let conversation = await Conversation.create(req.body)
 
         // return created conversation
-        return res.status(201).json(conversation)
+        return res.status(201).json(conversation.populate("members"))
     } catch (err) {
         console.log(err)
         return res.status(500).json({
