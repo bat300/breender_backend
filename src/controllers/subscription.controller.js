@@ -52,11 +52,9 @@ const sendReminderEmail = async (user) => {
 const checkPlanStatus = async (id)  => {
     let user = await User.findById(id).exec();
     let currentDate = new Date();
-    
-    if(user.subscriptionPlan === "premium" && user.startDate) {
 
+    if(user.subscriptionPlan === "premium" && user.startDate) {
     if (user.endDate.getDate() - currentDate.getDate() === 1 && currentDate.getMonth() === user.endDate.getMonth() && currentDate.getFullYear() === user.endDate.getFullYear() && !user.subscriptionReminderSent) { // check if there is one day left for the premium subscription and send an email
-        console.log("hi");
         
         let updatedUser = await User.findByIdAndUpdate({ "_id": id}, { "$set": {"subscriptionReminderSent" : true}}, {
             new: true,

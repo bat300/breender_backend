@@ -35,7 +35,7 @@ const login = async (req, res) => {
         }
         // if user is found and password is valid
         // create a token
-        const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role, subscriptionPlan: user.subscriptionPlan }, JwtSecret, {
+        const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role }, JwtSecret, {
             expiresIn: 86400, // expires in 24 hours
         })
 
@@ -131,8 +131,7 @@ const register = async (req, res) => {
             {
                 _id: retUser._id,
                 username: retUser.username,
-                role: retUser.role,
-                subscriptionPlan: retUser.subscriptionPlan
+                role: retUser.role
             },
             JwtSecret,
             {
