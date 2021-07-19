@@ -40,7 +40,6 @@ io.on("connection", (socket) => {
             })
         } catch (error) {
             console.log("User not currently online")
-            // console.log(error)
         }
     })
 
