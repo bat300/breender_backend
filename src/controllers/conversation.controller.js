@@ -31,7 +31,7 @@ const read = async (req, res) => {
         // get conversation with id from database
         let conversation = await Conversation.findOne({
             members: { $all: [req.params.firstUserId, req.params.secondUserId] },
-        })
+        }).populate("members")
 
         // if conversation wasn't found, return 404
         if (!conversation)
