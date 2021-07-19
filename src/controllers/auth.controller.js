@@ -148,18 +148,13 @@ const register = async (req, res) => {
             },
         })
         //send an email with verification link containing email and token
-        var mailOptions = {
-            from: "breenderseba@gmail.com",
-            to: retUser.email,
-            subject: "Account Verification Link",
-            text: "Hello " + retUser.username + ",\n\n" + "Please verify your account by clicking the link: \nhttp://" + "localhost:3000" + "/confirmation/" + retUser.email + "/" + token + "\n\nThank You!\n",
-        }
-        transporter.sendMail(mailOptions, function (err) {
-            if (err) {
-                return res.status(500).send({ msg: err })
-            }
-            return res.status(200).send("A verification email has been sent to " + retUser.email + ". It will be expire after one day. If you not get verification Email click on resend token.")
-        })
+                var mailOptions = { from: 'breenderseba@gmail.com', to: retUser.email, subject: 'Account Verification Link', text: 'Hello '+ retUser.username +',\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + 'localhost:3000' + '\/confirmation\/' + retUser.email + '\/' + token + '\n\nThank You!\n' };
+                transporter.sendMail(mailOptions, function (err) {
+                    if (err) { 
+                        return res.status(500).send({msg: err});
+                     }
+                    return res.status(200).send('A verification email has been sent to ' + retUser.email + '. It will expire after one day. If you did not get a verification email please click on the resend token.');
+                });
 
         // return generated token
         res.status(200).json({
@@ -263,10 +258,10 @@ const confirmEmail = async (req, res) => {
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await User.findById(req.userId).select("username").exec()
+        let user = await User.findById(req.params.id).exec()
 
         if (!user)
-            return res.status(404).json({
+            return res.status(405).json({
                 error: "Not Found",
                 message: `User not found`,
             })

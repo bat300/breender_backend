@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import petRouter from './routes/pet.router.js';
 import authRouter from './routes/auth.router.js';
 import userRouter from './routes/user.router.js';
+import transactionRouter from './routes/transaction.router.js';
 
 const App = express();
 
@@ -28,5 +29,6 @@ App.get('/', (req, res) => {
 App.use('/pets', petRouter);
 App.use('/auth', authRouter);
 App.use('/user', userRouter);
+App.use('/transaction', transactionRouter);
 
 export default App;
