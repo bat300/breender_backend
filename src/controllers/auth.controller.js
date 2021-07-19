@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken"
 import * as bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { JwtSecret } from "../config.js"
-import User from "../models/user.model.js"
+import { User } from "../models/user.model.js"
 import * as EmailValidator from 'email-validator'
 
 const login = async (req, res) => {
@@ -80,7 +80,7 @@ const register = async (req, res) => {
             error: "Bad Request",
             message: "The request body must contain a city property",
         })
-     if (!Object.prototype.hasOwnProperty.call(req.body, "province"))
+    if (!Object.prototype.hasOwnProperty.call(req.body, "province"))
         return res.status(400).json({
             error: "Bad Request",
             message: "The request body must contain a province property",
@@ -94,7 +94,7 @@ const register = async (req, res) => {
 
         var userData;
 
-        if(req.body.subscriptionPlan != "free") {
+        if (req.body.subscriptionPlan != "free") {
             //if subscription plan is premium, add additional data
             userData = {
                 username: req.body.username,
@@ -123,7 +123,7 @@ const register = async (req, res) => {
 
         // create the user in the database
         let retUser = await User.create(userData)
-        
+
 
         // if user is registered without errors
         // create a token
@@ -148,18 +148,13 @@ const register = async (req, res) => {
             },
         })
         //send an email with verification link containing email and token
-        var mailOptions = {
-            from: "breenderseba@gmail.com",
-            to: retUser.email,
-            subject: "Account Verification Link",
-            text: "Hello " + retUser.username + ",\n\n" + "Please verify your account by clicking the link: \nhttp://" + "localhost:3000" + "/confirmation/" + retUser.email + "/" + token + "\n\nThank You!\n",
-        }
-        transporter.sendMail(mailOptions, function (err) {
-            if (err) {
-                return res.status(500).send({ msg: err })
-            }
-            return res.status(200).send("A verification email has been sent to " + retUser.email + ". It will be expire after one day. If you not get verification Email click on resend token.")
-        })
+                var mailOptions = { from: 'breenderseba@gmail.com', to: retUser.email, subject: 'Account Verification Link', text: 'Hello '+ retUser.username +',\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + 'localhost:3000' + '\/confirmation\/' + retUser.email + '\/' + token + '\n\nThank You!\n' };
+                transporter.sendMail(mailOptions, function (err) {
+                    if (err) { 
+                        return res.status(500).send({msg: err});
+                     }
+                    return res.status(200).send('A verification email has been sent to ' + retUser.email + '. It will expire after one day. If you did not get a verification email please click on the resend token.');
+                });
 
         // return generated token
         res.status(200).json({
@@ -189,8 +184,8 @@ const checkUser = async (req, res) => {
                 error: { type: "email", message: "Invalid email format." },
             })
         }
-        if(req.params.isAdmin === 'true') { 
-            if(!(req.params.email.indexOf('@breender.de') >= 0)) {
+        if (req.params.isAdmin === 'true') {
+            if (!(req.params.email.indexOf('@breender.de') >= 0)) {
                 return res.status(400).json({
                     error: { type: "email", message: "Only Breender employees can set admin tag." },
                 })
@@ -263,10 +258,10 @@ const confirmEmail = async (req, res) => {
 const me = async (req, res) => {
     try {
         // get own user name from database
-        let user = await User.findById(req.userId).select("username").exec()
+        let user = await User.findById(req.params.id).exec()
 
         if (!user)
-            return res.status(404).json({
+            return res.status(405).json({
                 error: "Not Found",
                 message: `User not found`,
             })

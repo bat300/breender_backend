@@ -128,4 +128,4 @@ function calculateEndDate(startDate, paymentPlan) {
 const User = mongoose.model("User", UserSchema)
 const Review = mongoose.model("Review", ReviewSchema)
 
-export default User
+export { User, Review }
