@@ -14,35 +14,6 @@ const PaymentMethodSchema = new Schema({
     },
 })
 
-const ReviewSchema = new Schema({
-    reviewerId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    revieweeId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    review: {
-        type: String,
-        required: true,
-    },
-    rating: {
-        type: Number,
-        min: 0,
-        max: 5,
-        required: true,
-    },
-    reviewDate: {
-        type: Date,
-        required: true,
-    },
-    verifiedTransaction: {
-        type: Boolean,
-        default: false,
-    },
-})
-
 const UserSchema = new Schema({
     username: {
         type: String,
@@ -126,6 +97,5 @@ function calculateEndDate(startDate, paymentPlan) {
     return date
 }
 const User = mongoose.model("User", UserSchema)
-const Review = mongoose.model("Review", ReviewSchema)
 
-export { User, Review }
+export default User

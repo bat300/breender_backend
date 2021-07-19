@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken"
 import * as bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { JwtSecret } from "../config.js"
-import { User } from "../models/user.model.js"
+import User from "../models/user.model.js"
 import * as EmailValidator from 'email-validator'
 
 const login = async (req, res) => {
