@@ -1,4 +1,5 @@
 import jsonwebtoken from "jsonwebtoken"
+import { checkPlanStatus } from "../controllers/subscription.controller.js"
 import { JwtSecret } from "../config.js"
 import User from "../models/user.model.js"
 
@@ -38,6 +39,7 @@ const checkAuthentication = (req, res, next) => {
 
         // if everything is good, save to request for use in other routes
         req.userId = decoded._id
+        checkPlanStatus(req.userId);
         next()
     })
 }
