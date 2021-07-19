@@ -6,7 +6,7 @@ const userRouter = express.Router()
 
 userRouter
     .get("/pets/:ownerId", checkAuthentication, list) // List all pets of a user 
-    .get("/:id/reviews", checkAuthentication, getReviewsOnUser) // get user 
+    .get("/:id/reviews", checkAuthentication, getReviewsOnUser) // get user  
     .put("/:id", checkAuthentication, update) // Update a user by id, needs logged in user 
     .get("/:id", checkAuthentication, read) // get user
     .post("/add-review", checkAuthentication, createReview) // Create a new review, needs logged in user

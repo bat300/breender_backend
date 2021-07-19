@@ -106,7 +106,9 @@ const createReview = async (req, res) => {
     // handle the request
     try {
         // create review in a database
-        let review = await Review.create(req.body)
+        var reviewToSave = req.body.review
+        reviewToSave.reviewDate = new Date()
+        let review = await Review.create(reviewToSave)
 
         // return created review
         return res.status(201).json(review)
