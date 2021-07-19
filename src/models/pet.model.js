@@ -88,6 +88,7 @@ const PetSchema = new mongoose.Schema({
         type: Number,
         min: 0.0,
     },
+    // if set to true, this pet is currently purchased for some user
     purchased: {
         type: Boolean,
         default: false,

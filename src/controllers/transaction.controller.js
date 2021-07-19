@@ -4,12 +4,17 @@ import { Transaction } from "../models/transaction.model.js"
 import moment from "moment"
 import nodemailer from "nodemailer"
 
+/**
+ * Controller file for the transactions handling
+ */
+
 const STATUS_TYPE = {
     PENDING: "pending",
     SUCCESS: "success",
     FAIL: "fail",
 }
 
+// send the last reminder to the user to update the transaction status
 const sendReminder = (user, transaction) => {
     var transporter = nodemailer.createTransport({
         service: "Gmail",
@@ -19,7 +24,6 @@ const sendReminder = (user, transaction) => {
         },
     })
 
-    //send an email with a reminder to change the status
     var mailOptions = {
         from: "breenderseba@gmail.com",
         to: user.email,
@@ -28,6 +32,7 @@ const sendReminder = (user, transaction) => {
     }
     transporter.sendMail(mailOptions, function () {})
 
+    // update transaction property "reminderSent" in db
     Transaction.findByIdAndUpdate(
         transaction._id,
         { reminderSent: true },
@@ -38,6 +43,7 @@ const sendReminder = (user, transaction) => {
     ).exec()
 }
 
+// default function to update transaction status to success
 const updateStatusToSuccess = async (transaction) => {
     let updatedTransaction = await Transaction.findByIdAndUpdate(
         transaction._id,
@@ -50,6 +56,7 @@ const updateStatusToSuccess = async (transaction) => {
     return updatedTransaction
 }
 
+// default function to update transaction status to fail
 const updateStatusToFail = async (transaction) => {
     let updatedTransaction = await Transaction.findByIdAndUpdate(
         transaction._id,
@@ -62,17 +69,21 @@ const updateStatusToFail = async (transaction) => {
     return updatedTransaction
 }
 
+// logic for checking the transaction status and updating it
 const checkTransactionStatus = async (transactionsData) => {
     let transactions = transactionsData
+    // go through each transaction for the user
     for (let i = 0; i < transactions.length; i++) {
         let transaction = transactions[i]
+
+        // check if deadline is after now, if false it's expired
+        let deadlineExpired = moment(transaction.deadline).isBefore()
+
         // check if transaction was already finalized
         if (!transaction.processed) {
             let receiverStatus = transaction.receiverResponse
             let senderStatus = transaction.senderResponse
 
-            // check if deadline is after now, if false it's expired
-            let deadlineExpired = moment(transaction.deadline).isBefore()
             // check if till the deadline one day left (for the reminder)
             let deadlineOneDayBefore = moment(transaction.deadline).subtract(24, "hours").isBefore()
 
@@ -114,6 +125,15 @@ const checkTransactionStatus = async (transactionsData) => {
                         transaction = await updateStatusToFail(transaction)
                     }
                 }
+            }
+        } else {
+            // remove purchased pet flag if the transaction is ready
+            if (transaction.status === STATUS_TYPE.FAIL || (transaction.status === STATUS_TYPE.SUCCESS && deadlineExpired)) {
+                // find pet and set purchased flag to false
+                await Pet.findByIdAndUpdate(transaction.pet, {purchased: false}, {
+                    new: true,
+                    runValidators: true,
+                }).exec()
             }
         }
     }
@@ -186,7 +206,7 @@ const update = async (req, res) => {
 
         let result = await checkTransactionStatus([transaction])[0]
 
-        // return updated pet
+        // return updated transaction
         return res.status(200).json(result)
     } catch (err) {
         console.log(err)
@@ -199,10 +219,10 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        // find and remove pet
+        // find and remove transaction
         await Transaction.findByIdAndRemove(req.params.id).exec()
 
-        // return message that pet was deleted
+        // return message that transaction was deleted
         return res.status(200).json({ message: `Transaction with id${req.params.id} was deleted` })
     } catch (err) {
         console.log(err)
@@ -216,7 +236,7 @@ const remove = async (req, res) => {
 const listFoUser = async (req, res) => {
     try {
         let id = req.query.userId
-        // get all pets in the database
+        // get all transactions for the user independent of the sender or receiver role in the database
         let transactions = await Transaction.find({ $or: [{ senderId: id }, { receiverId: id }] }).exec()
 
         let result = await checkTransactionStatus(transactions)
