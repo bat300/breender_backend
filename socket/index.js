@@ -31,12 +31,17 @@ io.on("connection", (socket) => {
 
     //send and get message
     socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-        console.log("Sending and getting a message.")
+        console.log("Sending and getting a message between " + senderId + " and " + receiverId)
         const user = getUser(receiverId)
-        io.to(user.socketId).emit("getMessage", {
-            senderId,
-            text,
-        })
+        try {
+            io.to(user.socketId).emit("getMessage", {
+                senderId,
+                text,
+            })
+        } catch (error) {
+            console.log("User not currently online")
+            // console.log(error)
+        }
     })
 
     //when disconnect
