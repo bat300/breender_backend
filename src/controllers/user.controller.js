@@ -1,5 +1,6 @@
 import { Pet } from "../models/pet.model.js"
 import { User, Review } from "../models/user.model.js"
+import * as bcrypt from "bcrypt"
 
 
 const list = async (req, res) => {
@@ -56,6 +57,10 @@ const update = async (req, res) => {
     // handle the request
     try {
         // find and update user with id
+        const salt = bcrypt.genSaltSync(8)
+        const hashedPassword = bcrypt.hashSync(req.body.password, salt)
+        req.body.password = hashedPassword
+
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true,
