@@ -5,10 +5,10 @@ const Schema = mongoose.Schema
 const PaymentMethodSchema = new Schema({
     type: {
         type: String,
-        enum: ["paypal"],
+        enum: ["PayPal"],
         required: true,
     },
-    details: {
+    email: {
         type: String,
         required: true,
     },
@@ -72,23 +72,57 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    province: {
+        type: String,
+        required: true,
+    },
     subscriptionPlan: {
         type: String,
         enum: ["free", "premium"],
         default: "free",
         required: true,
     },
-    renewalFrequency: {
+    paymentPlan: {
         type: String,
         enum: ["none", "1mo", "3mo", "6mo", "1yr"],
         default: "none",
         required: true,
     },
-    nextRenewalDate: Date,
-    paymentMethods: [PaymentMethodSchema],
+    startDate: Date,
+    paymentMethod: PaymentMethodSchema,
 })
 
-const User = mongoose.model("User", UserSchema)
-// export const Review = mongoose.model("Review", ReviewSchema);
+UserSchema.virtual("endDate").get(function () {
+    return calculateEndDate(this.startDate, this.paymentPlan)
+})
 
-export default User
+function calculateEndDate(startDate, paymentPlan) {
+    var i = 0
+    switch (paymentPlan) {
+        case "1mo":
+            i = 1
+            break
+        case "3mo":
+            i = 3
+            break
+        case "6mo":
+            i = 6
+            break
+        case "1yr":
+            i = 12
+            break
+        case "none":
+            break
+        default:
+            break
+    }
+
+    var dy = startDate.getDay()
+    startDate.setMonth(startDate.getMonth() + i * 1)
+    startDate.setDate(startDate.getDate() - (startDate.getDay() - dy))
+    return startDate
+}
+const User = mongoose.model("User", UserSchema)
+const Review = mongoose.model("Review", ReviewSchema)
+
+export { User, Review }
