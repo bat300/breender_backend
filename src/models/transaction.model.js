@@ -10,10 +10,10 @@ const StatusProperty = {
 }
 
 const TransactionSchema = new mongoose.Schema(
-    {   
+    {
         orderNr: {
             type: String,
-            required: true, 
+            required: true,
         },
         senderId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -42,10 +42,6 @@ const TransactionSchema = new mongoose.Schema(
             min: 0.0,
             required: true,
         },
-        processed: {
-            type: Boolean,
-            default: false,
-        },
         reminderSent: {
             type: Boolean,
             default: false,
@@ -63,8 +59,14 @@ TransactionSchema.virtual("deadline").get(function () {
     return calculateDeadline(this.createdAt)
 })
 
+TransactionSchema.virtual("processed").get(function () {
+    if (this.status === "success" || this.status === "fail") {
+        return true
+    } else return false
+})
+
 function calculateDeadline(createdAt) {
-    var deadline = moment(createdAt).add(transactionDaysLimit, 'days');
+    var deadline = moment(createdAt).add(transactionDaysLimit, "days")
     return deadline
 }
 
