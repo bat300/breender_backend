@@ -8,7 +8,7 @@ petRouter
     .get("/", list) // List all pets
     .post("/", checkAuthentication, create) // Create a new pet, needs logged in user
     .get("/search", getPets)
-    .get("/:id", read) // Read a pet by id
+    .get("/:id",checkAuthentication, read) // Read a pet by id
     .put("/:id", checkAuthentication, update) // Update a pet by id, needs logged in user 
     .delete("/:id", checkAuthentication, remove) // Delete a oet by id, needs logged in user 
 
