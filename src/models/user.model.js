@@ -64,7 +64,11 @@ const UserSchema = new Schema({
     subscriptionReminderSent: {
         type: Boolean,
         default: false,
-    }
+    },
+},
+{
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
 })
 
 UserSchema.virtual("endDate").get(function () {
