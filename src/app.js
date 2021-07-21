@@ -6,6 +6,7 @@ import morgan from "morgan"
 // import routes
 import petRouter from "./routes/pet.router.js"
 import authRouter from "./routes/auth.router.js"
+import docRouter from "./routes/doc.router.js"
 import subscriptionRouter from "./routes/subscription.router.js"
 import userRouter from "./routes/user.router.js"
 import transactionRouter from "./routes/transaction.router.js"
@@ -31,6 +32,7 @@ App.get("/", (req, res) => {
 // @TODO: add further routes
 App.use("/pets", petRouter)
 App.use("/auth", authRouter)
+App.use("/documents", docRouter)
 App.use("/subscription", subscriptionRouter)
 App.use("/user", userRouter)
 App.use("/transaction", transactionRouter)
