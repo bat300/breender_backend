@@ -1,6 +1,7 @@
 import { Pet } from "../models/pet.model.js"
 import User from "../models/user.model.js"
 import Review from "../models/review.model.js"
+import * as bcrypt from "bcrypt"
 import mongoose from 'mongoose'
 
 
