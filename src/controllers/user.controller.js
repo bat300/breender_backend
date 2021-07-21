@@ -1,7 +1,6 @@
 import { Pet } from "../models/pet.model.js"
-import { User, Review } from "../models/user.model.js"
-import * as bcrypt from "bcrypt"
-import mongoose from 'mongoose'
+import User from "../models/user.model.js"
+import Review from "../models/review.model.js"
 
 
 const list = async (req, res) => {

@@ -90,13 +90,18 @@ const UserSchema = new Schema({
     },
     startDate: Date,
     paymentMethod: PaymentMethodSchema,
+    subscriptionReminderSent: {
+        type: Boolean,
+        default: false,
+    }
 })
 
 UserSchema.virtual("endDate").get(function () {
-    return calculateEndDate(this.startDate, this.paymentPlan)
+    return this.startDate? calculateEndDate(this.startDate, this.paymentPlan) : null;
 })
 
 function calculateEndDate(startDate, paymentPlan) {
+    var date = new Date(startDate);
     var i = 0
     switch (paymentPlan) {
         case "1mo":
@@ -117,12 +122,9 @@ function calculateEndDate(startDate, paymentPlan) {
             break
     }
 
-    var dy = startDate.getDay()
-    startDate.setMonth(startDate.getMonth() + i * 1)
-    startDate.setDate(startDate.getDate() - (startDate.getDay() - dy))
-    return startDate
+    date.setMonth(startDate.getMonth() + (i * 1)) //-1 because January is 0
+    return date
 }
 const User = mongoose.model("User", UserSchema)
-const Review = mongoose.model("Review", ReviewSchema)
 
-export { User, Review }
+export default User

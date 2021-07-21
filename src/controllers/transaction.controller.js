@@ -1,5 +1,5 @@
 import { Pet } from "../models/pet.model.js"
-import { User } from "../models/user.model.js"
+import User from "../models/user.model.js"
 import { Transaction } from "../models/transaction.model.js"
 import moment from "moment"
 import nodemailer from "nodemailer"

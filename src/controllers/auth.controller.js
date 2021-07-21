@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken"
 import * as bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { JwtSecret } from "../config.js"
-import { User } from "../models/user.model.js"
+import User from "../models/user.model.js"
 import * as EmailValidator from 'email-validator'
 
 const login = async (req, res) => {
@@ -35,7 +35,7 @@ const login = async (req, res) => {
         }
         // if user is found and password is valid
         // create a token
-        const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role, subscriptionPlan: user.subscriptionPlan }, JwtSecret, {
+        const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role }, JwtSecret, {
             expiresIn: 86400, // expires in 24 hours
         })
 
@@ -131,8 +131,7 @@ const register = async (req, res) => {
             {
                 _id: retUser._id,
                 username: retUser.username,
-                role: retUser.role,
-                subscriptionPlan: retUser.subscriptionPlan
+                role: retUser.role
             },
             JwtSecret,
             {
@@ -279,34 +278,4 @@ const logout = (req, res) => {
     res.status(200).send({ token: null })
 }
 
-const updateUser = async (req, res, next) => {
-    // check if the body of the request contains all necessary properties
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400).json({
-            error: "Bad Request",
-            message: "The request body is empty",
-        })
-    }
-
-    // handle the request
-    try {
-
-        // find and update movie with id
-        await User.findByIdAndUpdate({ "_id": req.body.id }, { "$set": { "subscriptionPlan": req.body.subscriptionPlan, "paymentPlan": req.body.paymentPlan, "paymentMethod": req.body.paymentMethod } }, {
-            new: true,
-            runValidators: true,
-        }).exec()
-
-        return res.status(200).json("User updated")
-        //token is atomatically invalidated
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({
-            error: "Internal server error",
-            message: err.message,
-        })
-    }
-}
-
-export { login, register, checkUser, logout, me, confirmEmail, updateUser }
+export { login, register, checkUser, logout, me, confirmEmail }
