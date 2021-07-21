@@ -115,7 +115,7 @@ const getPets = async (req, res) => {
         let breed = req.query.breed
         let age = req.query.age[0].split(",")
         let species = req.query.species
-        let page = parseInt(req.query.page || "0")
+        let page = parseInt(req.query.page || "1")
 
         const itemsPerPage = 10
         var petCount = 0
