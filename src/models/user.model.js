@@ -14,35 +14,6 @@ const PaymentMethodSchema = new Schema({
     },
 })
 
-const ReviewSchema = new Schema({
-    reviewerId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    revieweeId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    review: {
-        type: String,
-        required: true,
-    },
-    rating: {
-        type: Number,
-        min: 0,
-        max: 5,
-        required: true,
-    },
-    reviewDate: {
-        type: Date,
-        required: true,
-    },
-    transactionNr: {
-        type: String,
-        required: true,
-    },
-})
-
 const UserSchema = new Schema({
     username: {
         type: String,
@@ -97,7 +68,7 @@ const UserSchema = new Schema({
 })
 
 UserSchema.virtual("endDate").get(function () {
-    return this.startDate? calculateEndDate(this.startDate, this.paymentPlan) : null;
+    return this.startDate ? calculateEndDate(this.startDate, this.paymentPlan) : null;
 })
 
 function calculateEndDate(startDate, paymentPlan) {

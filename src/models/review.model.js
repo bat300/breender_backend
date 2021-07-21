@@ -25,9 +25,9 @@ const ReviewSchema = new Schema({
         type: Date,
         required: true,
     },
-    verifiedTransaction: {
-        type: Boolean,
-        default: false,
+    transactionNr: {
+        type: String,
+        required: true,
     },
 })
 
