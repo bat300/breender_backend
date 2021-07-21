@@ -1,4 +1,6 @@
+import User from "../models/user.model.js"
 import { Pet } from "../models/pet.model.js"
+import mongoose from "mongoose"
 
 const create = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -127,57 +129,99 @@ const getPets = async (req, res) => {
         var dateTill = new Date()
         dateTill.setFullYear(dateTill.getFullYear() - parseInt(age[0]))
 
+        let premiumUsers = (await User.find({ subscriptionPlan: "premium" }).select("_id")).map(function (u) {
+            return mongoose.Types.ObjectId(u._id)
+        })
+        let freeUsers = (await User.find({ subscriptionPlan: "free" }).select("_id")).map(function (u) {
+            return mongoose.Types.ObjectId(u._id)
+        })
+
         if ((sex == null || sex == "") && (breed == null || breed == "")) {
             if (species == null || species == "") {
                 petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
                     .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
+                let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .populate("ownerId", "subscriptionPlan")
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                let pets = premiumPets.concat(freePets)
                 return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
             } else {
-                petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-                let pets = await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })).length
+                let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
                     .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
+                let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .populate("ownerId", "subscriptionPlan")
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                let pets = premiumPets.concat(freePets)
                 return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
             }
         } else if (sex == null || sex == "") {
-            petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-            let pets = await Pet.find({ $and: [{ breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+            petCount = await (await Pet.find({ $and: [{ breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
+            let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
                 .populate("ownerId", "subscriptionPlan")
                 .limit(itemsPerPage)
                 .skip(itemsPerPage * page)
                 .exec()
+            let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { breed: breed }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                .populate("ownerId", "subscriptionPlan")
+                .limit(itemsPerPage)
+                .skip(itemsPerPage * page)
+                .exec()
+            let pets = premiumPets.concat(freePets)
             return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
         } else if (breed == null || breed == "") {
             if (species == null || species == "") {
-                petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                petCount = await (await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
+                let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
                     .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
-                return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
+                let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+                    .populate("ownerId", "subscriptionPlan")
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                let pets = premiumPets.concat(freePets)
             } else {
-                petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-                let pets = await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                petCount = await (await Pet.find({ $and: [{ sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })).length
+                let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
                     .populate("ownerId", "subscriptionPlan")
                     .limit(itemsPerPage)
                     .skip(itemsPerPage * page)
                     .exec()
+                let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }, { species: species }] })
+                    .populate("ownerId", "subscriptionPlan")
+                    .limit(itemsPerPage)
+                    .skip(itemsPerPage * page)
+                    .exec()
+                let pets = premiumPets.concat(freePets)
                 return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
             }
         }
-        petCount = await (await Pet.find({ $and: [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
-        let pets = await Pet.find({ $and: [{ breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+        petCount = await (await Pet.find({ $and: [{ breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })).length
+        let premiumPets = await Pet.find({ $and: [{ ownerId: { $in: premiumUsers } }, { breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
             .populate("ownerId", "subscriptionPlan")
             .limit(itemsPerPage)
             .skip(itemsPerPage * page)
             .exec()
+        let freePets = await Pet.find({ $and: [{ ownerId: { $in: freeUsers } }, { breed: breed }, { sex: sex }, { birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }] })
+            .populate("ownerId", "subscriptionPlan")
+            .limit(itemsPerPage)
+            .skip(itemsPerPage * page)
+            .exec()
+        let pets = premiumPets.concat(freePets)
         return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
     } catch (err) {
         return res.status(500).json({
