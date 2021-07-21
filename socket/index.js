@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
 
     //take userId and socketId from user
     socket.on("addUser", (userId) => {
-        console.log("Adding user " + userId)
+        console.log("Adding user " + userId + "with socketId" + socket.id)
         addUser(userId, socket.id)
     })
 
