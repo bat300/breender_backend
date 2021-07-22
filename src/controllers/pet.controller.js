@@ -122,7 +122,7 @@ const getPets = async (req, res) => {
         var petCount = 0
         var totalPages = 0
 
-        let showOwn = req.query.showOwn === 'false' ? false : true;
+        let showOwn = req.query.showOwn === "false" ? false : true
         let userId = req.query.user
 
         var dateFrom = new Date()
@@ -144,13 +144,13 @@ const getPets = async (req, res) => {
         let breedSearch = breed == null || breed == "" ? [] : [{ breed: breed }]
         let speciesSearch = species == null || species == "" ? [] : [{ species: species }]
         // check if user id was given, if display of own pets is disabled - filter them out
-        let userSearch = userId === '' ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
+        let userSearch = userId === "" ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
 
-        petCount = await (await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] } )).length
-        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] } )
+        petCount = await (await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })).length
+        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        let freePets = await Pet.findawait Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] } )
+        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
         let pets = premiumPets.concat(freePets)
