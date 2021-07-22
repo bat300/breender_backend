@@ -64,11 +64,15 @@ const UserSchema = new Schema({
     subscriptionReminderSent: {
         type: Boolean,
         default: false,
-    }
+    },
+},
+{
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
 })
 
 UserSchema.virtual("endDate").get(function () {
-    return this.startDate? calculateEndDate(this.startDate, this.paymentPlan) : null;
+    return this.startDate ? calculateEndDate(this.startDate, this.paymentPlan) : null;
 })
 
 function calculateEndDate(startDate, paymentPlan) {
@@ -93,7 +97,7 @@ function calculateEndDate(startDate, paymentPlan) {
             break
     }
 
-    date.setMonth(startDate.getMonth() + (i * 1)) //-1 because January is 0
+    date.setMonth(startDate.getMonth() + (i * 1))
     return date
 }
 const User = mongoose.model("User", UserSchema)
