@@ -1,6 +1,8 @@
 import { Pet } from "../models/pet.model.js"
 import User from "../models/user.model.js"
 import Review from "../models/review.model.js"
+import * as bcrypt from "bcrypt"
+import mongoose from 'mongoose'
 
 
 const list = async (req, res) => {
@@ -57,6 +59,10 @@ const update = async (req, res) => {
     // handle the request
     try {
         // find and update user with id
+        const salt = bcrypt.genSaltSync(8)
+        const hashedPassword = bcrypt.hashSync(req.body.password, salt)
+        req.body.password = hashedPassword
+
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true,
@@ -76,7 +82,21 @@ const update = async (req, res) => {
 const getReviewsOnUser = async (req, res) => {
     try {
         // get reviews on user from database
-        let reviews = await Review.find({ revieweeId: req.params.id }).exec()
+        let reviews = await Review.aggregate([
+            {
+                $match: {
+                    revieweeId: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "transactions",
+                    localField: "transactionNr",
+                    foreignField: "orderNr",
+                    as: "transaction",
+                }
+            }
+        ])
 
         // if reviews weren't found, return 404
         if (!reviews)
