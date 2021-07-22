@@ -93,7 +93,7 @@ function calculateEndDate(startDate, paymentPlan) {
             break
     }
 
-    date.setMonth(startDate.getMonth() + (i * 1)) //-1 because January is 0
+    date.setMonth(startDate.getMonth() + (i * 1))
     return date
 }
 const User = mongoose.model("User", UserSchema)

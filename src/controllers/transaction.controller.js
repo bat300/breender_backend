@@ -47,7 +47,7 @@ const sendReminder = (user, transaction) => {
 const updateStatusToSuccess = async (transaction) => {
     let updatedTransaction = await Transaction.findByIdAndUpdate(
         transaction._id,
-        { status: STATUS_TYPE.SUCCESS, processed: true },
+        { status: STATUS_TYPE.SUCCESS },
         {
             new: true,
             runValidators: true,
@@ -60,7 +60,7 @@ const updateStatusToSuccess = async (transaction) => {
 const updateStatusToFail = async (transaction) => {
     let updatedTransaction = await Transaction.findByIdAndUpdate(
         transaction._id,
-        { status: STATUS_TYPE.FAIL, processed: true },
+        { status: STATUS_TYPE.FAIL },
         {
             new: true,
             runValidators: true,
@@ -179,7 +179,6 @@ const read = async (req, res) => {
         // return transaction
         return res.status(200).json(transaction)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -209,7 +208,6 @@ const update = async (req, res) => {
         // return updated transaction
         return res.status(200).json(result)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -225,7 +223,6 @@ const remove = async (req, res) => {
         // return message that transaction was deleted
         return res.status(200).json({ message: `Transaction with id${req.params.id} was deleted` })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -254,7 +251,6 @@ const listFoUser = async (req, res) => {
         // return transactions
         return res.status(200).json(result)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -262,4 +258,31 @@ const listFoUser = async (req, res) => {
     }
 }
 
-export { listFoUser, create, update, remove, read }
+const listForAdmin = async (req, res) => {
+    try {
+        // get all transactions for the user independent of the sender or receiver role in the database
+        let transactions = await Transaction.find({}).exec()
+
+        let result = await checkTransactionStatus(transactions)
+
+        for (let i = 0; i < result.length; i++) {
+            let pet = await Pet.findById(result[i].pet).exec()
+            let sender = await User.findById(result[i].senderId).exec()
+            let receiver = await User.findById(result[i].receiverId).exec()
+
+            result[i].pet = pet
+            result[i].senderId = sender
+            result[i].receiverId = receiver
+        }
+
+        // return transactions
+        return res.status(200).json(result)
+    } catch (err) {
+        return res.status(500).json({
+            error: "Internal server error",
+            message: err.message,
+        })
+    }
+}
+
+export { listFoUser, create, update, remove, read, listForAdmin }
