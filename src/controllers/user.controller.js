@@ -7,9 +7,7 @@ import mongoose from 'mongoose'
 
 const list = async (req, res) => {
     try {
-        console.log('I am in list')
         let ownerId = req.params.ownerId
-        console.log('The owner id is ', ownerId)
         // get all pets of a user in the database
         let pets = await Pet.find({ ownerId: ownerId }).exec()
 
@@ -27,7 +25,7 @@ const list = async (req, res) => {
 const read = async (req, res) => {
     try {
         // get user with id from database
-        let user = await User.findById(req.params.id).exec()
+        let user = await User.findById(req.params.id).select('-password').exec()
 
         // if user wasn't found, return 404
         if (!user)
