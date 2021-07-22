@@ -1,4 +1,6 @@
+import User from "../models/user.model.js"
 import { Pet } from "../models/pet.model.js"
+import mongoose from "mongoose"
 
 const create = async (req, res) => {
     // check if the body of the request contains all necessary properties
@@ -113,7 +115,14 @@ const getPets = async (req, res) => {
         let breed = req.query.breed
         let age = req.query.age[0].split(",")
         let species = req.query.species
-        let showOwn = req.query.showOwn === 'false' ? false : true;
+
+        // Pagination
+        let page = parseInt(req.query.page - 1 || "0")
+        const itemsPerPage = 10
+        var petCount = 0
+        var totalPages = 0
+
+        let showOwn = req.query.showOwn === "false" ? false : true
         let userId = req.query.user
 
         var dateFrom = new Date()
@@ -122,16 +131,31 @@ const getPets = async (req, res) => {
         var dateTill = new Date()
         dateTill.setFullYear(dateTill.getFullYear() - parseInt(age[0]))
 
+        let premiumUsers = (await User.find({ subscriptionPlan: "premium" }).select("_id")).map(function (u) {
+            return mongoose.Types.ObjectId(u._id)
+        })
+        let freeUsers = (await User.find({ subscriptionPlan: "free" }).select("_id")).map(function (u) {
+            return mongoose.Types.ObjectId(u._id)
+        })
+
         // check if the values are empty, otherwise save for the search
         let ageSearch = [{ birthDate: { $gte: dateFrom } }, { birthDate: { $lte: dateTill } }]
         let sexSearch = sex == null || sex == "" ? [] : [{ sex: sex }]
         let breedSearch = breed == null || breed == "" ? [] : [{ breed: breed }]
         let speciesSearch = species == null || species == "" ? [] : [{ species: species }]
         // check if user id was given, if display of own pets is disabled - filter them out
-        let userSearch = userId === '' ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
+        let userSearch = userId === "" ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
 
-        let pets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] } ).exec()
-        return res.status(200).json({ pets: pets })
+        petCount = await (await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })).length
+        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
+            .populate("ownerId", "subscriptionPlan")
+            .exec()
+        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
+            .populate("ownerId", "subscriptionPlan")
+            .exec()
+        let pets = premiumPets.concat(freePets)
+        pets = pets.slice(itemsPerPage * page, itemsPerPage * (page + 1))
+        return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
     } catch (err) {
         return res.status(500).json({
             error: "Internal server error",
