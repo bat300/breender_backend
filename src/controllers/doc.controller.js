@@ -1,4 +1,7 @@
 import { Pet } from "../models/pet.model.js"
+import nodemailer from "nodemailer"
+import User from "../models/user.model.js"
+
 const getDocs = async (req, res) => { //get unpocessed docs
     try {
         // get pet with id from database
@@ -21,6 +24,8 @@ const getDocs = async (req, res) => { //get unpocessed docs
                 },
                 {
                     $project: {
+                        "ownerId": 1,
+                        "officialName": 1,
                         competitions: {
                             //create field named competitions
                             $filter: {
@@ -41,6 +46,8 @@ const getDocs = async (req, res) => { //get unpocessed docs
                 },
                 {
                     $project: {
+                        "ownerId": 1,
+                        "officialName": 1,
                         documents: {
                             $concatArrays: ["$documents", "$competitions"],
                         },
@@ -136,6 +143,10 @@ const verify = async (req, res) => {
             await Pet.updateOne({ "documents._id": req.body.docId }, { $set: { "documents.$.verified": true, "documents.$.verificationDate": new Date() } }).exec()
         }
 
+        let user = await User.findById(req.body.ownerId).exec();
+
+        await sendDocumentReviewEmail(user, req.body.officialName)
+
         return res.status(200).json("Document verified")
     } catch (err) {
         console.log(err)
@@ -156,6 +167,10 @@ const decline = async (req, res) => {
             await Pet.updateOne({ "documents._id": req.body.docId }, { $set: { "documents.$.declined": true, "documents.$.verificationDate": new Date() } }).exec()
         }
 
+        let user = await User.findById(req.body.ownerId).exec();
+
+        await sendDocumentReviewEmail(user, req.body.officialName)
+
         return res.status(200).json("Document declined")
     } catch (err) {
         console.log(err)
@@ -164,5 +179,22 @@ const decline = async (req, res) => {
             message: err.message,
         })
     }
+}
+
+const sendDocumentReviewEmail = async (user, petName) => {
+    var transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "breenderseba@gmail.com",
+            pass: "breenderTeamSEBA2021",
+        },
+    })
+    var mailOptions = {
+        from: "breenderseba@gmail.com",
+        to: user.email,
+        subject: "Document reviewed",
+        text: "Hello " + user.username + ",\n\n" + "A document of your pet named "+ petName + " was reviewed. Please check the status on the pet profile." + "\n\nThank You,\n" + "\nYour Breender Team\n",
+    }
+    transporter.sendMail(mailOptions);
 }
 export { getDocs, getProcessedDocs, verify, decline }
