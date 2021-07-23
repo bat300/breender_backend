@@ -56,13 +56,20 @@ const update = async (req, res) => {
 
     // handle the request
     try {
-        // find and update user with id
-        const salt = bcrypt.genSaltSync(8)
-        const hashedPassword = bcrypt.hashSync(req.body.password, salt)
-        req.body.password = hashedPassword
+        // update the password only if given in the request body
+        if (typeof req.body.password === 'undefined' || req.body.password === null) {
+            let user = await User.findById(req.params.id).exec()
+            req.body.password = user.password
+        } else {
+            // hash the password
+            const salt = bcrypt.genSaltSync(8)
+            const hashedPassword = bcrypt.hashSync(req.body.password, salt)
+            req.body.password = hashedPassword
+        }
+
 
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
+            new: true, //return the updated object
             runValidators: true,
         }).exec()
 
