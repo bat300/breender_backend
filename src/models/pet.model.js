@@ -78,6 +78,7 @@ const PetSchema = new mongoose.Schema({
     },
     sex: {
         type: String,
+        enum: ["male", "female"],
         required: true,
     },
     breed: {

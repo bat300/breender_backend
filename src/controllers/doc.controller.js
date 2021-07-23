@@ -1,5 +1,5 @@
 import { Pet } from "../models/pet.model.js"
-const getDocs = async (req, res) => {
+const getDocs = async (req, res) => { //get unpocessed docs
     try {
         // get pet with id from database
         let docs = await Pet.aggregate([
@@ -59,7 +59,65 @@ const getDocs = async (req, res) => {
         // return documents
         return res.status(200).json(docs)
     } catch (err) {
-        console.log(err)
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: err.message,
+        })
+    }
+}
+
+const getProcessedDocs = async (req, res) => { //get verified or declined documents
+    let condition = req.params.condition;
+    try {
+        let docs = await Pet.aggregate(
+            [
+                [
+                    {
+                      $project: {
+                        competitions: {
+                          $filter: {
+                            input: '$competitions', 
+                            as: 'item', 
+                            cond: {
+                              $ne: [
+                                `$$item.certificate.${condition}`, false
+                              ]
+                            }
+                          }
+                        }, 
+                        documents: {
+                          $filter: {
+                            input: '$documents', 
+                            as: 'item', 
+                            cond: {
+                              $ne: [
+                                `$$item.${condition}`, false
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }, {
+                      $project: {
+                        documents: {
+                          $concatArrays: [
+                            '$documents', '$competitions'
+                          ]
+                        }
+                      }
+                    }, {
+                      $match: {
+                        documents: {
+                          $ne: []
+                        }
+                      }
+                    }
+                  ]
+            ]
+        );
+        console.log("got processed docs")
+        return res.status(200).json(docs)
+    } catch (err) {
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -107,4 +165,4 @@ const decline = async (req, res) => {
         })
     }
 }
-export { getDocs, verify, decline }
+export { getDocs, getProcessedDocs, verify, decline }
