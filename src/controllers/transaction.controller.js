@@ -154,6 +154,13 @@ const create = async (req, res) => {
         // create transaction in a database
         let transaction = await Transaction.create(req.body)
 
+        let sender = await User.findById(transaction.senderId).exec();
+        let receiver = await User.findById(transaction.receiverId).exec();
+        let pet = await Pet.findById(transaction.pet).exec();
+
+        await sendTransactionStartedEmail(sender, receiver, pet);
+       
+
         // return created transaction
         return res.status(201).json(transaction)
     } catch (err) {
@@ -283,6 +290,23 @@ const listForAdmin = async (req, res) => {
             message: err.message,
         })
     }
+}
+
+const sendTransactionStartedEmail = async (sender, receiver, pet) => {
+    var transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "breenderseba@gmail.com",
+            pass: "breenderTeamSEBA2021",
+        },
+    })
+    var mailOptions = {
+        from: "breenderseba@gmail.com",
+        to: receiver.email,
+        subject: "Document reviewed",
+        text: "Hello " + receiver.username + ",\n\n" + "A user "+ sender.username + " purchased your pet named " + pet.officialName + ". You can check the transaction status and change your response on My transactions page." + "\n\nThank You,\n" + "\nYour Breender Team\n",
+    }
+    transporter.sendMail(mailOptions);
 }
 
 export { listFoUser, create, update, remove, read, listForAdmin }
