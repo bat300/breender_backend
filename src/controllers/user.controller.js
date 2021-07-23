@@ -71,7 +71,7 @@ const update = async (req, res) => {
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true, //return the updated object
             runValidators: true,
-        }).exec()
+        }).select('-password').exec()
 
         // return updated user
         return res.status(200).json(user)
