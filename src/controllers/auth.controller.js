@@ -27,12 +27,13 @@ const login = async (req, res) => {
         }).exec()
 
         // check if the password is valid
-        // const isPasswordValid = bcrypt.compareSync(req.body.password, user.password)
-        // if (!isPasswordValid) {
-        //     return res.status(401).json({
-        //         token: null,
-        //     })
-        // }
+        const isPasswordValid = bcrypt.compareSync(req.body.password, user.password)
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                token: null,
+            })
+        }
+
         // if user is found and password is valid
         // create a token
         const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role }, JwtSecret, {
