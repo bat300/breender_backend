@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import moment from 'moment';
+import mongoose from "mongoose"
+import moment from "moment"
 
 const DocumentSchema = new mongoose.Schema({
     name: {
@@ -32,7 +32,6 @@ const DocumentSchema = new mongoose.Schema({
     },
     verificationDate: Date,
 })
-
 
 const PictureSchema = new mongoose.Schema({
     path: {
@@ -119,13 +118,13 @@ PetSchema.virtual("age").get(function () {
 })
 
 function calculateAge(birthDate) {
-    let today = moment();
-    let birthday = moment(birthDate, 'MM-YYYY');
-    let diff = moment.duration(today.diff(birthday));
-    let years = diff.years();
-    let months = diff.months() / 12;
-    
-    return (years + months).toFixed(2);
+    let today = moment()
+    let birthday = moment(birthDate, "MM-YYYY")
+    let diff = moment.duration(today.diff(birthday))
+    let years = diff.years()
+    let months = diff.months() / 12
+
+    return (years + months).toFixed(2)
 }
 
 export var Pet = mongoose.model("Pet", PetSchema)
