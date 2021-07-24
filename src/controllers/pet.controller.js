@@ -147,13 +147,23 @@ const getPets = async (req, res) => {
         let userSearch = userId === "" ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
 
         petCount = await (await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })).length
-        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
+        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: false }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })
+        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: false }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        let pets = premiumPets.concat(freePets)
+        console.log("premiumPets: ", premiumPets)
+        console.log("freePets: ", freePets)
+        let premiumPurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: true }] })
+            .populate("ownerId", "subscriptionPlan")
+            .exec()
+        let freePurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: true }] })
+            .populate("ownerId", "subscriptionPlan")
+            .exec()
+        console.log("premiumPurchasedPets: ", premiumPurchasedPets)
+        console.log("freePurchasedPets: ", freePurchasedPets)
+        let pets = premiumPets.concat(freePets).concat(premiumPurchasedPets).concat(freePurchasedPets)
         pets = pets.slice(itemsPerPage * page, itemsPerPage * (page + 1))
         return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
     } catch (err) {
