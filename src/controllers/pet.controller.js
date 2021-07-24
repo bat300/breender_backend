@@ -147,24 +147,21 @@ const getPets = async (req, res) => {
         let userSearch = userId === "" ? [] : showOwn === true ? [] : [{ ownerId: { $ne: userId } }]
 
         petCount = await (await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch] })).length
-        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: false }] })
+        let premiumPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { ownerId: { $in: premiumUsers } }, { purchased: false }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: false }] })
+        let freePets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { ownerId: { $in: freeUsers } }, { purchased: false }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        console.log("premiumPets: ", premiumPets)
-        console.log("freePets: ", freePets)
-        let premiumPurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: true }] })
+        let premiumPurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { ownerId: { $in: premiumUsers } }, { purchased: true }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        let freePurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { purchased: true }] })
+        let freePurchasedPets = await Pet.find({ $and: [...userSearch, ...ageSearch, ...sexSearch, ...breedSearch, ...speciesSearch, { ownerId: { $in: freeUsers } }, { purchased: true }] })
             .populate("ownerId", "subscriptionPlan")
             .exec()
-        console.log("premiumPurchasedPets: ", premiumPurchasedPets)
-        console.log("freePurchasedPets: ", freePurchasedPets)
         let pets = premiumPets.concat(freePets).concat(premiumPurchasedPets).concat(freePurchasedPets)
-        pets = pets.slice(itemsPerPage * page, itemsPerPage * (page + 1))
+        let endIndex = itemsPerPage * (page + 1) > pets.length ? pets.length : itemsPerPage * (page + 1)
+        pets = pets.slice(itemsPerPage * page, endIndex)
         return res.status(200).json({ pets: pets, totalPages: Math.ceil(petCount / itemsPerPage) })
     } catch (err) {
         return res.status(500).json({
