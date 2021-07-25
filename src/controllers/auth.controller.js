@@ -33,6 +33,7 @@ const login = async (req, res) => {
                 token: null,
             })
         }
+
         // if user is found and password is valid
         // create a token
         const token = jsonwebtoken.sign({ _id: user._id, username: user.username, role: user.role }, JwtSecret, {
