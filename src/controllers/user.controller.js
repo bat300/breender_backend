@@ -3,6 +3,7 @@ import User from "../models/user.model.js"
 import Review from "../models/review.model.js"
 import * as bcrypt from "bcrypt"
 import mongoose from "mongoose"
+import { Transaction } from "../models/transaction.model.js"
 
 const list = async (req, res) => {
     try {
@@ -157,6 +158,8 @@ const createReview = async (req, res) => {
         if (!reviewsForTransactionCount || reviewsForTransactionCount == 0) {
             reviewToSave.reviewDate = new Date()
             let review = await Review.create(reviewToSave)
+            await Transaction.updateOne({ orderNr: req.body.review.transactionNr }, { $set: { isReviewed: true } }).exec()
+
             // return created review
             return res.status(201).json(review)
         } else {
