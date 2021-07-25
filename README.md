@@ -43,7 +43,7 @@ npm start
 Return back to the project root folder and run
 
 ```bash
-npm start
+npm run devstart
 ```
 
 ### Breender Account Credentials
