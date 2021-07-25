@@ -133,8 +133,9 @@ const createReview = async (req, res) => {
     try {
         // create review in a database
         var reviewToSave = req.body.review
-        const reviewsForTransactionCount = await Review.find({ transactionNr: reviewToSave.transactionNr, reviewerId: reviewToSave.reviewerId }).count
-        if (reviewsForTransactionCount == 0) {
+        const reviewsForTransactionCount = await (await Review.find({ transactionNr: reviewToSave.transactionNr, reviewerId: reviewToSave.reviewerId })).count
+        console.log(reviewsForTransactionCount)
+        if (!reviewsForTransactionCount || reviewsForTransactionCount == 0) {
             reviewToSave.reviewDate = new Date()
             let review = await Review.create(reviewToSave)
             // return created review
