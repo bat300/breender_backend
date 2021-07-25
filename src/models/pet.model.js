@@ -60,60 +60,58 @@ const CompetitionSchema = new mongoose.Schema({
     certificate: DocumentSchema,
 })
 
-const PetSchema = new mongoose.Schema(
-    {
-        ownerId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-        officialName: {
-            type: String,
-            required: true,
-        },
-        nickname: String,
-        birthDate: {
-            type: Date,
-            required: true,
-        },
-        sex: {
-            type: String,
-            required: true,
-        },
-        breed: {
-            type: String,
-            required: true,
-        },
-        species: {
-            type: String,
-            enum: ["dog", "cat", "horse"],
-            required: true,
-        },
-        price: {
-            type: Number,
-            min: 0.0,
-        },
-        // if set to true, this pet is currently purchased for some user
-        purchased: {
-            type: Boolean,
-            default: false,
-        },
-        dateCreated: Date,
-        // Profile picture stored as path to the image
-        profilePicture: {
-            type: PictureSchema,
-            required: true,
-        },
-        // Pictures string as array of paths to images
-        pictures: [PictureSchema],
-        competitions: [CompetitionSchema],
-        documents: [DocumentSchema],
+const PetSchema = new mongoose.Schema({
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
     },
-    {
-        toObject: { virtuals: true },
-        toJSON: { virtuals: true },
-    }
-)
+    officialName: {
+        type: String,
+        required: true,
+    },
+    nickname: String,
+    birthDate: {
+        type: Date,
+        required: true,
+    },
+    sex: {
+        type: String,
+        enum: ["male", "female"],
+        required: true,
+    },
+    breed: {
+        type: String,
+        required: true,
+    },
+    species: {
+        type: String,
+        enum: ["dog", "cat", "horse"],
+        required: true,
+    },
+    price: {
+        type: Number,
+        min: 0.0,
+    },
+    // if set to true, this pet is currently purchased for some user
+    purchased: {
+        type: Boolean,
+        default: false,
+    },
+    dateCreated: Date,
+    // Profile picture stored as path to the image
+    profilePicture: {
+        type: PictureSchema,
+        required: true,
+    },
+    // Pictures string as array of paths to images
+    pictures: [PictureSchema],
+    competitions: [CompetitionSchema],
+    documents: [DocumentSchema],
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
+})
 
 PetSchema.virtual("age").get(function () {
     return calculateAge(this.birthDate)
