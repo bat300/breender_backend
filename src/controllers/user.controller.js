@@ -133,11 +133,18 @@ const createReview = async (req, res) => {
     try {
         // create review in a database
         var reviewToSave = req.body.review
-        reviewToSave.reviewDate = new Date()
-        let review = await Review.create(reviewToSave)
-
-        // return created review
-        return res.status(201).json(review)
+        const reviewsForTransactionCount = await Review.find({ transactionNr: reviewToSave.transactionNr, reviewerId: reviewToSave.reviewerId }).count
+        if (reviewsForTransactionCount == 0) {
+            reviewToSave.reviewDate = new Date()
+            let review = await Review.create(reviewToSave)
+            // return created review
+            return res.status(201).json(review)
+        } else {
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "You have already reviewed this transaction",
+            })
+        }
     } catch (err) {
         console.log(err)
         return res.status(500).json({
