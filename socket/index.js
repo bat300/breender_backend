@@ -1,4 +1,4 @@
-// TODO: use import if possible
+const nodemailer = require("nodemailer")
 const io = require("socket.io")(8900, {
     cors: {
         origin: "http://localhost:3000",
@@ -30,7 +30,7 @@ io.on("connection", (socket) => {
     })
 
     //send and get message
-    socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+    socket.on("sendMessage", async ({ senderId, receiverId, receiverEmail, receiverUsername, text }) => {
         console.log("Sending and getting a message between " + senderId + " and " + receiverId)
         const user = getUser(receiverId)
         try {
@@ -40,6 +40,28 @@ io.on("connection", (socket) => {
             })
         } catch (error) {
             console.log("User not currently online")
+            // Send e-mail for missed message
+            var transporter = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                    user: "breenderseba@gmail.com",
+                    pass: "breenderTeamSEBA2021",
+                },
+            })
+            //send an email to notify user about new message
+            var mailOptions = {
+                from: "breenderseba@gmail.com",
+                to: receiverEmail,
+                subject: "New Message on Breender",
+                text: "Hello " + receiverUsername + ",\n\n" + "You have a new message on your Breender account. \n\nHave a nice day!\n",
+            }
+            transporter.sendMail(mailOptions, function (err) {
+                if (err) {
+                    return res.status(500).send({ msg: err })
+                }
+                console.log("Notification e-mail sent to " + receiverId)
+                return res.status(200).send("A notification email has been sent to " + receiverEmail + ".")
+            })
         }
     })
 
