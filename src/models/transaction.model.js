@@ -42,6 +42,12 @@ const TransactionSchema = new mongoose.Schema(
             min: 0.0,
             required: true,
         },
+        fee: {
+            type: Number,
+            min: 0.0,
+            default: 0.0,
+            required: false,
+        },
         reminderSent: {
             type: Boolean,
             default: false,
