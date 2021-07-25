@@ -1,22 +1,30 @@
 import User from "../models/user.model.js"
-import { Pet } from "../models/pet.model.js"
+import { calculateAge, Pet } from "../models/pet.model.js"
 import mongoose from "mongoose"
 
 const create = async (req, res) => {
-    // check if the body of the request contains all necessary properties
-    if (Object.keys(req.body).length === 0)
-        return res.status(400).json({
-            error: "Bad Request",
-            message: "The request body is empty",
-        })
-
     // handle the request
     try {
+        // check if the body of the request contains all necessary properties
+        if (Object.keys(req.body).length === 0)
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "The request body is empty",
+            })
+
+        // check if pet is older then 10 years
+        if (calculateAge(new Date(req.body.birthDate)) >= 10) {
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "Pets older then 10 years old are not allowed",
+            })
+        }
+
         // create pet in a database
         let pet = await Pet.create(req.body)
 
         // return created pet
-        return res.status(201).json(pet)
+        return res.status(201).json()
     } catch (err) {
         console.log(err)
         return res.status(500).json({

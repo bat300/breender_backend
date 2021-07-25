@@ -119,7 +119,7 @@ PetSchema.virtual("age").get(function () {
     return calculateAge(this.birthDate)
 })
 
-function calculateAge(birthDate) {
+export function calculateAge(birthDate) {
     let today = moment()
     let birthday = moment(birthDate, "MM-YYYY")
     let diff = moment.duration(today.diff(birthday))
