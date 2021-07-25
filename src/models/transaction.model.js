@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import moment from "moment"
+import Review from "../models/review.model.js"
 
 const transactionDaysLimit = 60
 const StatusProperty = {
@@ -63,6 +64,11 @@ TransactionSchema.set("timestamps", true)
 
 TransactionSchema.virtual("deadline").get(function () {
     return calculateDeadline(this.createdAt)
+})
+
+TransactionSchema.virtual("isReviewed").get(function () {
+    let reviews = Review.find({ transactionNr: this._id })
+    return reviews && reviews.count > 0 ? true : false
 })
 
 TransactionSchema.virtual("processed").get(function () {
