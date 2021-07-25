@@ -58,16 +58,24 @@ const read = async (req, res) => {
 }
 
 const update = async (req, res) => {
-    // check if the body of the request contains all necessary properties
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400).json({
-            error: "Bad Request",
-            message: "The request body is empty",
-        })
-    }
-
     // handle the request
     try {
+        // check if the body of the request contains all necessary properties
+        if (Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "The request body is empty",
+            })
+        }
+
+        // check if pet is older then 10 years
+        if (calculateAge(new Date(req.body.birthDate)) >= 10) {
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "Pets older then 10 years old are not allowed",
+            })
+        }
+
         // find and update movie with id
         let pet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
