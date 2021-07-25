@@ -254,28 +254,8 @@ const confirmEmail = async (req, res) => {
     })
 }
 
-const me = async (req, res) => {
-    try {
-        // get own user name from database
-        let user = await User.findById(req.params.id).exec()
-
-        if (!user)
-            return res.status(405).json({
-                error: "Not Found",
-                message: `User not found`,
-            })
-
-        return res.status(200).json(user)
-    } catch (err) {
-        return res.status(500).json({
-            error: "Internal Server Error",
-            message: err.message,
-        })
-    }
-}
-
 const logout = (req, res) => {
     res.status(200).send({ token: null })
 }
 
-export { login, register, checkUser, logout, me, confirmEmail }
+export { login, register, checkUser, logout, confirmEmail }

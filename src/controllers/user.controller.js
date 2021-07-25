@@ -7,9 +7,7 @@ import mongoose from 'mongoose'
 
 const list = async (req, res) => {
     try {
-        console.log('I am in list')
         let ownerId = req.params.ownerId
-        console.log('The owner id is ', ownerId)
         // get all pets of a user in the database
         let pets = await Pet.find({ ownerId: ownerId }).exec()
 
@@ -27,7 +25,7 @@ const list = async (req, res) => {
 const read = async (req, res) => {
     try {
         // get user with id from database
-        let user = await User.findById(req.params.id).exec()
+        let user = await User.findById(req.params.id).select('-password').exec()
 
         // if user wasn't found, return 404
         if (!user)
@@ -58,15 +56,22 @@ const update = async (req, res) => {
 
     // handle the request
     try {
-        // find and update user with id
-        const salt = bcrypt.genSaltSync(8)
-        const hashedPassword = bcrypt.hashSync(req.body.password, salt)
-        req.body.password = hashedPassword
+        // update the password only if given in the request body
+        if (typeof req.body.password === 'undefined' || req.body.password === null) {
+            let user = await User.findById(req.params.id).exec()
+            req.body.password = user.password
+        } else {
+            // hash the password
+            const salt = bcrypt.genSaltSync(8)
+            const hashedPassword = bcrypt.hashSync(req.body.password, salt)
+            req.body.password = hashedPassword
+        }
+
 
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
+            new: true, //return the updated object
             runValidators: true,
-        }).exec()
+        }).select('-password').exec()
 
         // return updated user
         return res.status(200).json(user)
