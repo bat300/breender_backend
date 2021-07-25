@@ -156,10 +156,14 @@ const create = async (req, res) => {
 
         let sender = await User.findById(transaction.senderId).exec();
         let receiver = await User.findById(transaction.receiverId).exec();
-        let pet = await Pet.findById(transaction.pet).exec();
+        // find pet and set purchased flag to true
+        let pet = await Pet.findByIdAndUpdate(transaction.pet, { purchased: true }, {
+            new: true,
+            runValidators: true,
+        }).exec()
 
         await sendTransactionStartedEmail(sender, receiver, pet);
-       
+
 
         // return created transaction
         return res.status(201).json(transaction)
@@ -304,7 +308,7 @@ const sendTransactionStartedEmail = async (sender, receiver, pet) => {
         from: "breenderseba@gmail.com",
         to: receiver.email,
         subject: "Document reviewed",
-        text: "Hello " + receiver.username + ",\n\n" + "A user "+ sender.username + " purchased your pet named " + pet.officialName + ". You can check the transaction status and change your response on My transactions page." + "\n\nThank You,\n" + "\nYour Breender Team\n",
+        text: "Hello " + receiver.username + ",\n\n" + "A user " + sender.username + " purchased your pet named " + pet.officialName + ". You can check the transaction status and change your response on My transactions page." + "\n\nThank You,\n" + "\nYour Breender Team\n",
     }
     transporter.sendMail(mailOptions);
 }
