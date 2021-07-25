@@ -53,6 +53,11 @@ const TransactionSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isReviewed: {
+            type: Boolean,
+            default: false,
+            required: true,
+        },
     },
     {
         toObject: { virtuals: true },
@@ -64,11 +69,6 @@ TransactionSchema.set("timestamps", true)
 
 TransactionSchema.virtual("deadline").get(function () {
     return calculateDeadline(this.createdAt)
-})
-
-TransactionSchema.virtual("isReviewed").get(async function () {
-    let reviews = await Review.find({ transactionNr: this.orderNr })
-    return reviews && reviews.count > 0 ? true : false
 })
 
 TransactionSchema.virtual("processed").get(function () {
