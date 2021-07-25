@@ -4,11 +4,11 @@
 
 Both for the backend and frontend application:
 
-* nodejs [official website](https://nodejs.org/en/) - nodejs includes [npm](https://www.npmjs.com/) (node package manager)
+-   nodejs [official website](https://nodejs.org/en/) - nodejs includes [npm](https://www.npmjs.com/) (node package manager)
 
 Just for the backend application:
 
-* mongodb [official installation guide](https://docs.mongodb.org/manual/administration/install-community/)
+-   mongodb [official installation guide](https://docs.mongodb.org/manual/administration/install-community/)
 
 ## Setup (before first run)
 
@@ -27,12 +27,18 @@ Navigate from your project root folder to /socket folder and run
 ```
 npm install
 ```
-and then 
+
+## Start the project
+
+**Socket.io**
+
+While in the/socket folder run
+
 ```
 npm start
 ```
 
-## Start the project
+**Backend server**
 
 Return back to the project root folder and run
 
