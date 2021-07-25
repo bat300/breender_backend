@@ -307,8 +307,8 @@ const sendTransactionStartedEmail = async (sender, receiver, pet) => {
     var mailOptions = {
         from: "breenderseba@gmail.com",
         to: receiver.email,
-        subject: "Document reviewed",
-        text: "Hello " + receiver.username + ",\n\n" + "A user " + sender.username + " purchased your pet named " + pet.officialName + ". You can check the transaction status and change your response on My transactions page." + "\n\nThank You,\n" + "\nYour Breender Team\n",
+        subject: "Pet purchased!",
+        text: "Hello " + receiver.username + ",\n\n" + "A user "+ sender.username + " purchased your pet named " + pet.officialName + ". You can check the transaction status and change your response on My transactions page." + "\n\nThank You,\n" + "\nYour Breender Team\n",
     }
     transporter.sendMail(mailOptions);
 }

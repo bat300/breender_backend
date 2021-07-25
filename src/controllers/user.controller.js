@@ -2,8 +2,7 @@ import { Pet } from "../models/pet.model.js"
 import User from "../models/user.model.js"
 import Review from "../models/review.model.js"
 import * as bcrypt from "bcrypt"
-import mongoose from 'mongoose'
-
+import mongoose from "mongoose"
 
 const list = async (req, res) => {
     try {
@@ -25,7 +24,7 @@ const list = async (req, res) => {
 const read = async (req, res) => {
     try {
         // get user with id from database
-        let user = await User.findById(req.params.id).select('-password').exec()
+        let user = await User.findById(req.params.id).select("-password").exec()
 
         // if user wasn't found, return 404
         if (!user)
@@ -57,7 +56,7 @@ const update = async (req, res) => {
     // handle the request
     try {
         // update the password only if given in the request body
-        if (typeof req.body.password === 'undefined' || req.body.password === null) {
+        if (typeof req.body.password === "undefined" || req.body.password === null) {
             let user = await User.findById(req.params.id).exec()
             req.body.password = user.password
         } else {
@@ -67,11 +66,12 @@ const update = async (req, res) => {
             req.body.password = hashedPassword
         }
 
-
         let user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true, //return the updated object
             runValidators: true,
-        }).select('-password').exec()
+        })
+            .select("-password")
+            .exec()
 
         // return updated user
         return res.status(200).json(user)
@@ -90,17 +90,41 @@ const getReviewsOnUser = async (req, res) => {
         let reviews = await Review.aggregate([
             {
                 $match: {
-                    revieweeId: mongoose.Types.ObjectId(req.params.id)
-                }
+                    revieweeId: mongoose.Types.ObjectId(req.params.id),
+                },
             },
             {
                 $lookup: {
                     from: "transactions",
                     localField: "transactionNr",
                     foreignField: "orderNr",
-                    as: "transaction",
-                }
-            }
+                    as: "transactions",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "reviewerId",
+                    foreignField: "_id",
+                    as: "user",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    reviewerId: 1,
+                    reviweeId: 1,
+                    review: 1,
+                    rating: 1,
+                    reviewDate: 1,
+                    transaction: {
+                        $arrayElemAt: ["$transactions", 0],
+                    },
+                    username: {
+                        $arrayElemAt: ["$user.username", 0],
+                    },
+                },
+            },
         ])
 
         // if reviews weren't found, return 404
@@ -134,7 +158,6 @@ const createReview = async (req, res) => {
         // create review in a database
         var reviewToSave = req.body.review
         const reviewsForTransactionCount = await (await Review.find({ transactionNr: reviewToSave.transactionNr, reviewerId: reviewToSave.reviewerId })).count
-        console.log(reviewsForTransactionCount)
         if (!reviewsForTransactionCount || reviewsForTransactionCount == 0) {
             reviewToSave.reviewDate = new Date()
             let review = await Review.create(reviewToSave)
@@ -155,10 +178,4 @@ const createReview = async (req, res) => {
     }
 }
 
-export {
-    list,
-    read,
-    update,
-    getReviewsOnUser,
-    createReview
-}
+export { list, read, update, getReviewsOnUser, createReview }
