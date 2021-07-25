@@ -26,7 +26,6 @@ const create = async (req, res) => {
         // return created pet
         return res.status(201).json()
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -49,7 +48,6 @@ const read = async (req, res) => {
         // return pet
         return res.status(200).json(pet)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -85,7 +83,6 @@ const update = async (req, res) => {
         // return updated pet
         return res.status(200).json(pet)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -101,7 +98,6 @@ const remove = async (req, res) => {
         // return message that pet was deleted
         return res.status(200).json({ message: `Pet with id${req.params.id} was deleted` })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -117,7 +113,6 @@ const list = async (req, res) => {
         // return pets
         return res.status(200).json(pets)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,

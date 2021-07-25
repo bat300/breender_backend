@@ -122,7 +122,6 @@ const getProcessedDocs = async (req, res) => { //get verified or declined docume
                   ]
             ]
         );
-        console.log("got processed docs")
         return res.status(200).json(docs)
     } catch (err) {
         return res.status(500).json({
@@ -137,7 +136,6 @@ const verify = async (req, res) => {
         //find pet which has a certificate with this id and set its verification status to true
 
         if (req.body.docType === "comp") {
-            console.log(req.body)
             await Pet.updateOne({ "competitions.certificate._id": req.body.docId }, { $set: { "competitions.$.certificate.verified": true, "competitions.$.certificate.verificationDate": new Date() } }).exec()
         } else {
             await Pet.updateOne({ "documents._id": req.body.docId }, { $set: { "documents.$.verified": true, "documents.$.verificationDate": new Date() } }).exec()
@@ -149,7 +147,6 @@ const verify = async (req, res) => {
 
         return res.status(200).json("Document verified")
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -161,7 +158,6 @@ const decline = async (req, res) => {
         //find pet which has a certificate with this id and set its verification status to true
 
         if (req.body.docType === "comp") {
-            console.log(req.body)
             await Pet.updateOne({ "competitions.certificate._id": req.body.docId }, { $set: { "competitions.$.certificate.declined": true, "competitions.$.certificate.verificationDate": new Date() } }).exec()
         } else {
             await Pet.updateOne({ "documents._id": req.body.docId }, { $set: { "documents.$.declined": true, "documents.$.verificationDate": new Date() } }).exec()
@@ -173,7 +169,6 @@ const decline = async (req, res) => {
 
         return res.status(200).json("Document declined")
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,

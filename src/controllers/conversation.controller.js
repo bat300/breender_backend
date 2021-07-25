@@ -19,7 +19,6 @@ const create = async (req, res) => {
         // return created conversation
         return res.status(201).json(pupulatedConversation)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -44,7 +43,6 @@ const read = async (req, res) => {
         // return conversation
         return res.status(200).json(conversation)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -60,7 +58,6 @@ const remove = async (req, res) => {
         // return conversation that conversation was deleted
         return res.status(200).json({ message: `Conversation with id${req.params.id} was deleted` })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -75,7 +72,6 @@ const list = async (req, res) => {
         }).populate("members")
         res.status(200).json(conversation)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,

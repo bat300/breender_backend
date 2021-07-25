@@ -217,7 +217,6 @@ const confirmEmail = async (req, res) => {
     User.findOne({ _id: _id }, function (err, token) {
         // token is not found into database i.e. token may have expired
         if (!token) {
-            console.log("no token")
             return res.status(400).json({ error: "Link Expired", message: "Your verification link may have expired." })
         }
         // if token is found then check valid user
@@ -233,7 +232,6 @@ const confirmEmail = async (req, res) => {
                 }
                 // verify user
                 else {
-                    console.log(user)
                     user.isVerified = true
                     user.save(function (err) {
                         if (err) {

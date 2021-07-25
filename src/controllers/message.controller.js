@@ -17,7 +17,6 @@ const create = async (req, res) => {
         // return created message
         return res.status(201).json(message)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -35,7 +34,6 @@ const list = async (req, res) => {
         // return messages
         return res.status(200).json(messages)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -59,7 +57,6 @@ const listUnseen = async (req, res) => {
         // return messages
         return res.status(200).json(unseenMessages)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -95,7 +92,6 @@ const updateManyToSeen = async (req, res) => {
             })
         }
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,

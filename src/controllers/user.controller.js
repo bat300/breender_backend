@@ -13,7 +13,6 @@ const list = async (req, res) => {
         // return pets
         return res.status(200).json(pets)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -36,7 +35,6 @@ const read = async (req, res) => {
         // return user
         return res.status(200).json(user)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -76,7 +74,6 @@ const update = async (req, res) => {
         // return updated user
         return res.status(200).json(user)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
@@ -137,7 +134,6 @@ const getReviewsOnUser = async (req, res) => {
         // return user
         return res.status(200).json(reviews)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal Server Error",
             message: err.message,
@@ -170,7 +166,6 @@ const createReview = async (req, res) => {
             })
         }
     } catch (err) {
-        console.log(err)
         return res.status(500).json({
             error: "Internal server error",
             message: err.message,
