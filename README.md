@@ -45,3 +45,6 @@ Return back to the project root folder and run
 ```bash
 npm start
 ```
+
+### Breender Account Credentials
+All Breender account credentials and links can be found in the Frontend README file.
